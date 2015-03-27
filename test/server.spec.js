@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var request = require('superagent');
 
 var server = require('../app/server');
-var port = 9011;
+var port = 9010;
 var version = '/api/v1';
 var baseUrl = 'http://localhost:' + port + version;
 
