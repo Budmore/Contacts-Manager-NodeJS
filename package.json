@@ -14,8 +14,9 @@
     "type": "git",
     "url": "http://github.com/budmore/contacts-manager-nodejs"
   },
-  "author": "Jakub Mach",
+  "author": "Jakub Mach <j.mach@budmore.pl>",
   "license": "MIT",
+  "private": true,
   "bugs": {
     "url": "https://github.com/budmore/contacts-manager-nodejs/issues"
   },
