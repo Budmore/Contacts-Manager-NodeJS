@@ -42,6 +42,10 @@ afterEach(function(done) {
 		}
 	}
 
+	done();
+});
+
+after(function(done) {
 	// Drop database and disconnet connection to mongodb
 	mongoose.connection.db.dropDatabase(function(){
 		mongoose.connection.close(function() {
@@ -49,4 +53,3 @@ afterEach(function(done) {
 		});
 	});
 });
-
