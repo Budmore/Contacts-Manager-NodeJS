@@ -7,7 +7,7 @@
     "node": ">= 0.10.0"
   },
   "scripts": {
-    "start": "node_modules/nodemon/bin/nodemon app/server.js",
+    "start": "node_modules/nodemon/bin/nodemon.js app/server.js",
     "test": "node_modules/mocha/bin/mocha -R tap test/*",
     "test-tdd": "node_modules/mocha/bin/mocha -w test/*"
   },
