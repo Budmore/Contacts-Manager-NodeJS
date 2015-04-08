@@ -3,6 +3,7 @@ var assert = require('chai').assert;
 var ContactModel = require('../../app/models/contact');
 
 describe('Models: contact', function() {
+	'use strict';
 
 	it('should create new contact', function(done) {
 		var someDate = new Date();
@@ -14,8 +15,10 @@ describe('Models: contact', function() {
 			notes: 'is Awesome!',
 			email: 'j.mach@budmore.pl',
 			url: 'http://budmore.pl',
-			birthday: someDate,
-			nameday: someDate
+			birthdate: {
+				date: someDate,
+				year: someDate.getYear()
+			}
 		};
 
 		var createContact = new ContactModel(_contact);
@@ -25,7 +28,7 @@ describe('Models: contact', function() {
 			assert.ok(contact);
 			assert.isObject(contact);
 			assert.equal(contact.name, _contact.name);
-			assert.equal(contact.birthday, someDate);
+			assert.equal(contact.birthdate.date, someDate);
 			done();
 		});
 

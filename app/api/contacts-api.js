@@ -1,3 +1,4 @@
+'use strict';
 // Database
 var ContactModel = require('../models/contact');
 
@@ -43,8 +44,7 @@ var contacts = {
 			notes: req.body.notes,
 			email: req.body.email,
 			url: req.body.url,
-			birthday: req.body.birthday,
-			nameday: req.body.nameday
+			birthdate: req.body.birthdate
 		};
 
 		var createContact = new ContactModel(_contact);
@@ -124,7 +124,7 @@ var contacts = {
 
 		var _id = req.params.id;
 
-		ContactModel.findByIdAndRemove(_id, function(err, doc) {
+		ContactModel.findByIdAndRemove(_id, function(err) {
 			if (err) {
 				return res.status(500).send(err);
 			}

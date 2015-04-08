@@ -12,8 +12,12 @@ var ContactSchema = new Schema({
 	skype: String,
 	location: String,
 	url: String,
-	birthday: Date,
-	nameday: Date,
+	birthdate: {
+		date: Date,
+		year: Number,
+		month: Number,
+		day: Number
+	},
 	modified: { type: Date, default: Date.now }
 });
 
