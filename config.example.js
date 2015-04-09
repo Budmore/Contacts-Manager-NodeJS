@@ -6,10 +6,12 @@ var config = {
 	},
 	mailer: {
 		auth: {
-			user: 'test@example.com',
-			pass: 'secret',
+			user: 'no-reply@gmail.com',
+			pass: 'uO32a{]example33QKifdA#/+Q',
 		},
-		defaultFromAddress: 'First Last <test@examle.com>'
+		defaultFromAddress: 'Przypomnienie <no-reply@budmore.pl>',
+		host: 'smtp.mydevil.net',
+		port: 587
 	}
 };
 
