@@ -9,6 +9,7 @@ var baseUrl = 'http://localhost:' + port + version;
 var ContactModel = require('../../app/models/contact');
 
 describe('Contacts API', function() {
+	'use strict';
 
 	before(function(done) {
 		server.start(port, done);

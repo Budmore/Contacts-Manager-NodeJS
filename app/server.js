@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express');
 var port = 9010;
 var app = express();
@@ -13,6 +14,31 @@ var config = require('../config');
 mongoose.connect(config.db.development);
 
 
+
+var cronJobs = require('../app/services/cron-jobs');
+var NodeCron = require('cron').CronJob;
+
+var job = new NodeCron({
+  cronTime: '00 00 06 * * *',
+  onTick: function() {
+    console.log('Cron job: tick');
+    /*
+     * Runs every weekday (Monday through Friday)
+     * at 11:30:00 AM. It does not run on Saturday
+     * or Sunday.
+     */
+	cronJobs.checkAndSend();
+
+  },
+  start: true
+});
+
+
+
+
+
+
+
 var server;
 var start = exports.start = function(port, callback) {
 	server = app.listen(port, callback);
@@ -21,6 +47,13 @@ var stop = exports.stop = function(callback) {
 	server.close(callback);
 };
 
+
+start(port, function() {
+	//start cron jobs
+	console.log('Cron job: start');
+
+	job.start();
+});
 
 // ROUTES
 // -----------------------------------------------------------------------------

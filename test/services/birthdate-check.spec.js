@@ -12,10 +12,11 @@ describe('Service: birthdateCheck', function() {
 
 	var mockedContact = {
 		firstname: 'Jakub',
+		// Month in JavaScript is [0-11]
 		birthdate: {
-			date: new Date(1987, 8, 11),
+			date: new Date(1987, 7, 11),
 			year: 1987,
-			month: 8,
+			month: 7,
 			day: 11
 		}
 	};
@@ -37,7 +38,7 @@ describe('Service: birthdateCheck', function() {
 
 	it('should check is today birthdate', function(done) {
 
-		var someDay = new Date(2015, 08, 11);
+		var someDay = new Date(2015, 7, 11);
 
 
 		service.birthdateCheck(someDay).then(function(data) {

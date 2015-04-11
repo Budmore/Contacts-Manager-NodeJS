@@ -7,14 +7,14 @@ var assert = require('chai').assert;
 
 var stubTransport = require('nodemailer-stub-transport');
 
-describe('mailer', function () {
+describe.skip('Service: mail', function () {
 
 
-	it('should render the password reset templates correctly', function (done) {
+	it('should send email', function (done) {
 
 
 		var headers = {
-			to: 'jakub@budmore.pl',
+			to: 'j.mach@budmore.pl',
 			subject: 'Password reset',
 		};
 		var message = {
