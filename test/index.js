@@ -11,7 +11,7 @@
 
 
 if (!process.env.SPEC) {
-	console.log('### Environment = SPEC');
+	console.log('### Environment: SPEC');
 	process.env.SPEC = true;
 }
 

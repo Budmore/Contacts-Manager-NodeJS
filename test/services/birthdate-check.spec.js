@@ -1,7 +1,3 @@
-// {last_updated: new Date('2014-01-22T14:56:59.301Z')
-
-// collection.findOne({last_updated: new Date('2014-01-22T14:56:59.301Z')},function(err, doc
-
 var assert = require('chai').assert;
 
 var ContactModel = require('../../app/models/contact');

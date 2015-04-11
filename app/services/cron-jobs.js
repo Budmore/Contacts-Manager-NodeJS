@@ -11,28 +11,39 @@ var cronJobs = {
 
 		var today = new Date();
 
-		var promise = new Promise(function(resolve, reject) {
+		var promise = new Promise(function(resolve) {
 
 			service.birthdateCheck(today).then(function(data) {
-				console.log('data', data);
 				if (data.length) {
+
 					var headers = {
-						to: 'j.mach@budmore.pl'
+						to: 'j.mach@budmore.pl',
+						subject: 'Pamiętaj o życzeniach'
 					};
 
-					var message = {
-						text: JSON.stringify(data)
+					var options = {
+						data: {
+							contacts: data
+						},
+						template: 'notification'
 					};
 
-					mail.sendOne(headers, message).then(function(data) {
-						resolve(data);
+					mail.generateTemplate(options).then(function(data) {
+
+						var message = {
+							text: data.text,
+							html: data.html
+						};
+
+						mail.sendOne(headers, message).then(function(data) {
+							resolve(data);
+						});
+
 					});
 
 
-
-
 				} else {
-					reject('no data');
+					resolve('no one has birthday');
 				}
 
 			});

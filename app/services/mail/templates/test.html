@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+
+	<!--
+		This file is required for unit tests
+		Template Engine: https://lodash.com/docs#template
+	-->
+
+	This is important: <%- data.importantValue %>
+	<br>
+
+	<%
+		data.thisYear = new Date().getFullYear();
+	%>
+
+	<ul>
+		<% _.each( data.contacts, function( contact ){ %>
+			<li> <%- contact.firstname %> <%- contact.lastname %>, obchodzi
+				<%= (data.thisYear - contact.birthdate.year) %>
+				urodziny. (<%- contact.birthdate.year %>r)
+			</li>
+		<% }); %>
+	</ul>
+
+</body>
+</html>

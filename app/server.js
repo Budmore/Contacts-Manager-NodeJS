@@ -17,13 +17,24 @@ mongoose.connect(config.db.development);
 // Environment
 process.env[config.environment] = true;
 
+// Server
+var server;
+var start = exports.start = function(port, callback) {
+	server = app.listen(port, callback);
+};
+exports.stop = function(callback) {
+	server.close(callback);
+};
 
 
+//
+// Cron jobs
+// Runs every day at 6:00 AM - crontab.org
+//
 var NodeCron = require('cron').CronJob;
 var cronJobs = require('../app/services/cron-jobs');
-
-var job = new NodeCron({
-	cronTime: '00 00 06 * * *', // Runs every day at 6:00 AM
+new NodeCron({
+	cronTime: '00 00 06 * * *',
 	onTick: function() {
 		console.log('Cron job: tick');
 		cronJobs.checkAndSend();
@@ -32,26 +43,13 @@ var job = new NodeCron({
 	start: true
 });
 
-
-
-var server;
-exports.start = function(port, callback) {
-	server = app.listen(port, callback);
-};
-exports.stop = function(callback) {
-	server.close(callback);
-};
-
-
-var ipaddr = process.env.OPENSHIFT_INTERNAL_IP;
-var port = process.env.PORT || process.env.OPENSHIFT_INTERNAL_PORT || 9000;
-app.listen(port, ipaddr, function() {
-	//start cron jobs
-	console.log('Cron job: start');
-	job.start();
-});
-
-
+/*
+if (process.env.DEVELOPMENT) {
+	start(port, function() {
+		console.log('working');
+	});
+}
+*/
 
 // ROUTES
 // -----------------------------------------------------------------------------
