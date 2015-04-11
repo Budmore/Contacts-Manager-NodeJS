@@ -14,46 +14,44 @@ var config = require('../config');
 mongoose.connect(config.db.development);
 
 
+// Environment
+process.env[config.environment] = true;
 
-var cronJobs = require('../app/services/cron-jobs');
+
+
 var NodeCron = require('cron').CronJob;
+var cronJobs = require('../app/services/cron-jobs');
 
 var job = new NodeCron({
-  cronTime: '00 00 06 * * *',
-  onTick: function() {
-    console.log('Cron job: tick');
-    /*
-     * Runs every weekday (Monday through Friday)
-     * at 11:30:00 AM. It does not run on Saturday
-     * or Sunday.
-     */
-	cronJobs.checkAndSend();
+	cronTime: '00 00 06 * * *', // Runs every day at 6:00 AM
+	onTick: function() {
+		console.log('Cron job: tick');
+		cronJobs.checkAndSend();
 
-  },
-  start: true
+	},
+	start: true
 });
-
-
-
-
 
 
 
 var server;
-var start = exports.start = function(port, callback) {
+exports.start = function(port, callback) {
 	server = app.listen(port, callback);
 };
-var stop = exports.stop = function(callback) {
+exports.stop = function(callback) {
 	server.close(callback);
 };
 
 
-start(port, function() {
+var ipaddr = process.env.OPENSHIFT_INTERNAL_IP;
+var port = process.env.PORT || process.env.OPENSHIFT_INTERNAL_PORT || 9000;
+app.listen(port, ipaddr, function() {
 	//start cron jobs
 	console.log('Cron job: start');
-
 	job.start();
 });
+
+
 
 // ROUTES
 // -----------------------------------------------------------------------------

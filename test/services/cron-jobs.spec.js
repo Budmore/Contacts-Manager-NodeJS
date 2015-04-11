@@ -12,7 +12,7 @@ describe('Service: cronJobs', function() {
 			date: new Date(1987, 3, 9),
 			year: 1987,
 			month: 3,
-			day: 9
+			day: 11
 		}
 	};
 

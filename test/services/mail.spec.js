@@ -1,13 +1,11 @@
 'use strict';
 
 // import the moongoose helper utilities
-var mailer = require('../../app/services/mail');
-var nodemailer = require('nodemailer');
+var mailer = require('../../app/services/mail/mail');
 var assert = require('chai').assert;
 
-var stubTransport = require('nodemailer-stub-transport');
 
-describe.skip('Service: mail', function () {
+describe('Service: mail', function () {
 
 
 	it('should send email', function (done) {
@@ -22,9 +20,7 @@ describe.skip('Service: mail', function () {
 			html: '<b>lorem</b>'
 		};
 
-		var transport = nodemailer.createTransport(stubTransport());
-
-		mailer.sendOne(headers, message, transport).then(function(data) {
+		mailer.sendOne(headers, message).then(function(data) {
 			assert.ok(data);
 			done();
 		});
