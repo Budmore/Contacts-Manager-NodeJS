@@ -44,7 +44,7 @@ var contacts = {
 			notes: req.body.notes,
 			email: req.body.email,
 			url: req.body.url,
-			birthdate: req.body.birthdate
+			dates: req.body.dates
 		};
 
 		var createContact = new ContactModel(_contact);

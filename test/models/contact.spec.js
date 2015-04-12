@@ -15,20 +15,27 @@ describe('Models: contact', function() {
 			notes: 'is Awesome!',
 			email: 'j.mach@budmore.pl',
 			url: 'http://budmore.pl',
-			birthdate: {
-				date: someDate,
-				year: someDate.getYear()
-			}
+			dates: [
+				{
+					type: 'BIRTHDATE',
+					date: someDate,
+					year: someDate.getFullYear(),
+					month: someDate.getMonth(),
+					day: someDate.getDate()
+				}
+			]
 		};
 
 		var createContact = new ContactModel(_contact);
 
-		createContact.save(function(err, contact) {
+		createContact.save(function(err, doc) {
 			assert.isNull(err);
-			assert.ok(contact);
-			assert.isObject(contact);
-			assert.equal(contact.name, _contact.name);
-			assert.equal(contact.birthdate.date, someDate);
+			assert.ok(doc);
+			assert.isObject(doc);
+
+			assert.equal(doc.name, _contact.name);
+			assert.equal(doc.dates[0].date, someDate);
+
 			done();
 		});
 

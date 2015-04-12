@@ -12,16 +12,11 @@ var ContactSchema = new Schema({
 	skype: String,
 	location: String,
 	url: String,
-	birthdate: {
-		date: Date,
-		year: Number,
-		month: Number,
-		day: Number
-	},
 	dates: [{
 		type: {
 			type: String
 		},
+		date: Date,
 		year: Number,
 		month: Number,
 		day: Number
