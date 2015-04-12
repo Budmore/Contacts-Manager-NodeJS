@@ -3,7 +3,7 @@
 var Promise = require('bluebird');
 	// ContactModel   = require('../../app/models/contact');
 
-var service = require('../../app/services/birthdate-check');
+var service = require('../../app/services/contacts/contacts-service');
 var mail = require('../../app/services/mail/mail');
 
 var cronJobs = {
@@ -13,7 +13,7 @@ var cronJobs = {
 
 		var promise = new Promise(function(resolve) {
 
-			service.birthdateCheck(today).then(function(data) {
+			service.findContactsByDate(today).then(function(data) {
 				if (data.length) {
 
 					var headers = {

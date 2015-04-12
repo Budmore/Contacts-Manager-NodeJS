@@ -1,9 +1,9 @@
 var assert = require('chai').assert;
 
 var ContactModel = require('../../app/models/contact');
-var service = require('../../app/services/birthdate-check');
+var service = require('../../app/services/contacts/contacts-service');
 
-describe('Service: birthdateCheck', function() {
+describe('Service: contacts', function() {
 	'use strict';
 
 	var mockedContact = {
@@ -45,22 +45,6 @@ describe('Service: birthdateCheck', function() {
 
 	});
 
-
-
-	it('should check is today birthdate', function(done) {
-
-		var someDay = new Date(2015, 7, 11);
-
-
-		service.birthdateCheck(someDay).then(function(data) {
-			var dataDate = data[0].birthdate.date.toString();
-			var mockedDate = mockedContact.birthdate.date.toString();
-
-			assert.equal(dataDate, mockedDate);
-			done();
-		});
-
-	});
 
 	it('should check is contacts has some event today', function(done) {
 
