@@ -8,13 +8,28 @@ describe('Service: birthdateCheck', function() {
 
 	var mockedContact = {
 		firstname: 'Jakub',
-		// Month in JavaScript is [0-11]
 		birthdate: {
 			date: new Date(1987, 7, 11),
 			year: 1987,
 			month: 7,
 			day: 11
-		}
+		},
+		dates: [
+			{
+				type: 'BIRTDATE',
+				date: new Date(1987, 3, 11),
+				year: 1987,
+				month: 3,
+				day: 11
+			},
+			{
+				type: 'CUSTOM',
+				date: new Date(2000, 3, 11),
+				year: 2000,
+				month: 3,
+				day: 11
+			}
+		]
 	};
 
 	beforeEach('Create model with id (to test on it)',function(done) {
@@ -42,6 +57,21 @@ describe('Service: birthdateCheck', function() {
 			var mockedDate = mockedContact.birthdate.date.toString();
 
 			assert.equal(dataDate, mockedDate);
+			done();
+		});
+
+	});
+
+	it('should check is contacts has some event today', function(done) {
+
+		var someDay = new Date(2015, 3, 11);
+
+
+		service.findContactsByDate(someDay).then(function(data) {
+			var datesLength = data[0].dates.length;
+			var mockedDatesLength = mockedContact.dates.length;
+
+			assert.equal(datesLength, mockedDatesLength);
 			done();
 		});
 

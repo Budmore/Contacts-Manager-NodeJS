@@ -7,7 +7,7 @@ var ContactSchema = new Schema({
 	lastname: String,
 	nickname: String,
 	notes: String,
-	email: { type: String, unique: true },
+	email: { type: String },
 	phone: String,
 	skype: String,
 	location: String,
@@ -18,6 +18,14 @@ var ContactSchema = new Schema({
 		month: Number,
 		day: Number
 	},
+	dates: [{
+		type: {
+			type: String
+		},
+		year: Number,
+		month: Number,
+		day: Number
+	}],
 	modified: { type: Date, default: Date.now }
 });
 
