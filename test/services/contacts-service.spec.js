@@ -1,7 +1,7 @@
 var assert = require('chai').assert;
 
 var ContactModel = require('../../app/models/contact');
-var service = require('../../app/services/contacts/contacts-service');
+var contactsService = require('../../app/services/contacts/contacts-service');
 
 describe('Service: contacts', function() {
 	'use strict';
@@ -51,7 +51,7 @@ describe('Service: contacts', function() {
 		var someDay = new Date(2015, 3, 11);
 
 
-		service.findContactsByDate(someDay).then(function(data) {
+		contactsService.findContactsByDate(someDay).then(function(data) {
 			var datesLength = data[0].dates.length;
 			var mockedDatesLength = mockedContact.dates.length;
 
@@ -59,6 +59,42 @@ describe('Service: contacts', function() {
 			done();
 		});
 
+	});
+
+	it('should set property year, month, day from each date in dates.', function(done) {
+
+		var someDate = new Date();
+
+		var _contact = {
+			dates: [
+				{
+					type: 'BIRTHDATE',
+					date: someDate
+				},
+				{
+					type: 'EVENT',
+					date: someDate
+				}
+			]
+		};
+
+		var someYear = someDate.getFullYear();
+		var someMonth = someDate.getMonth();
+		var someDay = someDate.getDate();
+
+
+		contactsService.parseDates(_contact.dates);
+
+		assert.equal(_contact.dates[0].year, someYear);
+		assert.equal(_contact.dates[1].month, someMonth);
+		assert.equal(_contact.dates[0].day, someDay);
+
+
+		assert.equal(_contact.dates[1].year, someYear);
+		assert.equal(_contact.dates[1].month, someMonth);
+		assert.equal(_contact.dates[1].day, someDay);
+
+		done();
 	});
 
 

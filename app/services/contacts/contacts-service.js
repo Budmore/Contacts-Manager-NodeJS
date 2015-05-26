@@ -1,8 +1,9 @@
 'use strict';
 
-var _              = require('lodash'),
-	Promise        = require('bluebird'),
-	ContactModel   = require('../../../app/models/contact');
+	var _        = require('lodash'),
+	Promise      = require('bluebird'),
+	moment       = require('moment'),
+	ContactModel = require('../../../app/models/contact');
 
 var service = {
 
@@ -50,11 +51,40 @@ var service = {
 
 		return result;
 
+	},
+
+	/**
+	 * Set property year, month, day from each date in dates.
+	 *
+	 * @param  {Array} dates each object has property "date" with iso Date
+	 * @return {Array}
+	 */
+	parseDates: function(dates) {
+		if (!dates || dates.constructor !== Array) {
+			return;
+		}
+
+		dates.forEach(function(date) {
+
+			if ( date && moment(date.date).isValid()) {
+				var _isoDate = new Date(date.date);
+
+
+				date.year = _isoDate.getFullYear();
+				date.month = _isoDate.getMonth();
+				date.day = _isoDate.getDate();
+			}
+
+		});
+
+
+		return dates;
 	}
 
 };
 
 
 module.exports = {
-	findContactsByDate: service.findContactsByDate
+	findContactsByDate: service.findContactsByDate,
+	parseDates: service.parseDates
 };

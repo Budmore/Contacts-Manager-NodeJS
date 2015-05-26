@@ -1,7 +1,7 @@
 'use strict';
 // Database
 var ContactModel = require('../models/contact');
-
+var contactsService = require('../../app/services/contacts/contacts-service');
 var contacts = {
 
 	/**
@@ -46,6 +46,10 @@ var contacts = {
 			url: req.body.url,
 			dates: req.body.dates
 		};
+
+		if (_contact.dates && _contact.dates.length) {
+			contactsService.parseDates(_contact.dates);
+		}
 
 		var createContact = new ContactModel(_contact);
 

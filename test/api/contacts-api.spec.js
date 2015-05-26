@@ -47,7 +47,10 @@ describe('Contacts API', function() {
 
 		var _data = {
 			firstname: 'Jakub',
-			lastname: 'Mach'
+			lastname: 'Mach',
+			dates: [{
+				date: new Date()
+			}]
 		};
 
 		request
