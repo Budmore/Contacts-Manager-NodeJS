@@ -37,7 +37,7 @@ describe('Contacts API', function() {
 			.get(baseUrl + '/contacts')
 			.end(function(err, res) {
 				assert.isNull(err);
-				assert.isArray(res.body);
+				assert.isArray(res.body.data);
 				assert.equal(res.status, 200);
 				done();
 			});

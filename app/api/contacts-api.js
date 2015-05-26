@@ -21,7 +21,12 @@ var contacts = {
 				return res.status(500).send(err);
 			}
 
-			res.json(doc);
+			var _result = {
+				count: doc.length,
+				data: doc
+			};
+
+			res.json(_result);
 		});
 
 	},
