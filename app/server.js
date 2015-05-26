@@ -15,7 +15,9 @@ mongoose.connect(config.db.development);
 
 
 // Environment
-process.env[config.environment] = true;
+if (!process.env.SPEC) {
+	process.env[config.environment] = true;
+}
 
 // Server
 var server;
@@ -44,7 +46,7 @@ new NodeCron({
 });
 
 
-if (process.env.DEVELOPMENT) {
+if (!process.env.SPEC) {
 	start(port, function() {
 		console.log('working');
 	});
