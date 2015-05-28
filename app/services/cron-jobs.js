@@ -36,6 +36,7 @@ var cronJobs = {
 						};
 
 						mail.sendOne(headers, message).then(function(data) {
+							console.log('The message was successfully sent');
 							resolve(data);
 						});
 

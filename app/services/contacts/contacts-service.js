@@ -69,7 +69,7 @@ var service = {
 			if ( date && moment(date.date).isValid()) {
 				var _isoDate = new Date(date.date);
 
-
+				date.date = _isoDate;
 				date.year = _isoDate.getFullYear();
 				date.month = _isoDate.getMonth();
 				date.day = _isoDate.getDate();

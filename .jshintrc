@@ -23,7 +23,9 @@
     "afterEach": true,
     "before": true,
     "after": true,
-    "it": true
+    "it": true,
+    "fit": true,
+    "moment": true
 
   }
 }
