@@ -47,32 +47,24 @@ describe('User API', function() {
 			.post(baseUrl + '/users')
 			.send(_data)
 			.end(function(err, res) {
-				var hash = res.body.password;
-				var plainPassword = _data.password;
-				var verified = scrypt.verifyHashSync(hash, plainPassword);
-				assert.isTrue(verified);
-
-
 				assert.isNull(err);
-				assert.isObject(res.body);
-				assert.equal(res.status, 200);
+				assert.equal(res.status, 201);
 
 				done();
 			});
 
 	});
-/**
-	xdescribe('prams with id', function() {
-		var mockedContact = {
+
+	describe('prams with id', function() {
+		var mockedUser = {
 			_id: '55166e70fb1e9a18818ad8fd',
-			firstname: 'Jakub',
-			lastname: 'Mach',
-			nickname: 'Budmore'
+			email: 'jakub@o2.pl',
+			password: '[secret]'
 		};
 
 		beforeEach('Create model with id (to test on it)',function(done) {
 
-			var createContact = new ContactModel(mockedContact);
+			var createContact = new UserModel(mockedUser);
 
 			createContact.save(function(err, doc) {
 				assert.isNull(err);
@@ -84,15 +76,17 @@ describe('User API', function() {
 		});
 
 
-		it('should get contact by id', function(done) {
+		it('should get user by id', function(done) {
 
 			request
-				.get(baseUrl + '/contacts/' + mockedContact._id)
+				.get(baseUrl + '/users/' + mockedUser._id)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.isObject(res);
-					assert.equal(res.body._id, mockedContact._id);
-					assert.equal(res.body.lastname, mockedContact.lastname);
+
+					assert.equal(res.body._id, mockedUser._id);
+					assert.equal(res.body.email, mockedUser.email);
+					assert.isUndefined(res.body.password);
 					assert.equal(res.status, 200);
 					done();
 				});
@@ -100,14 +94,15 @@ describe('User API', function() {
 		});
 
 
-		it.skip('should get 404 if contact does not exists', function(done) {
+		it('should get 404 if contact does not exists', function(done) {
 
 			request
-				.get(baseUrl + '/contacts/fake-id')
+				.get(baseUrl + '/users/fake-id')
 				.end(function(err, res) {
-					assert.isNull(err);
+					assert.isObject(err);
 					assert.isObject(res);
 					assert.equal(res.status, 404);
+
 					done();
 				});
 
@@ -117,25 +112,24 @@ describe('User API', function() {
 		it('should update existing contact', function(done) {
 			var updatedContact = {
 				_id: '55166e70fb1e9a18818ad8fd',
-				firstname: 'Feliks',
-				lastname: 'Mach',
-				sone: 'aala'
+				email: 'test@aa.com',
+				// password: 'some'
 			};
 
 			request
-				.put(baseUrl + '/contacts/' + mockedContact._id)
+				.put(baseUrl + '/contacts/' + mockedUser._id)
 				.send(updatedContact)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.equal(res.status, 200);
 					assert.equal(res.body.firstname, updatedContact.firstname);
-					assert.equal(res.body.nickname, mockedContact.nickname);
+					assert.equal(res.body.nickname, mockedUser.nickname);
 					done();
 				});
 		});
 
 
-		it('should remove existing contact', function(done) {
+		it.skip('should remove existing contact', function(done) {
 			var countBefore, countAfter;
 
 			// Count documents before
@@ -145,7 +139,7 @@ describe('User API', function() {
 
 			// Delete Request
 			request
-				.del(baseUrl + '/contacts/' + mockedContact._id)
+				.del(baseUrl + '/contacts/' + mockedUser._id)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.equal(res.status, 200);
@@ -164,5 +158,5 @@ describe('User API', function() {
 
 	});
 
-*/
+
 });

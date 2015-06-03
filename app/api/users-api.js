@@ -17,20 +17,23 @@ var usersApi = {
 	 * @return {array}
 	 */
 	getAll: function(req, res) {
+		UserModel
+			.find({})
+			.populate('password') //Exclude the password field
+			.exec(function(err, users) {
+				if (err) {
+					return res.status(500).send.err;
+				}
 
-		UserModel.find({}, function(err, users) {
-			if (err) {
-				return res.status(500).send.err;
+				var _result = {
+					count: users.length,
+					data: users
+				};
+
+				res.json(_result);
+
 			}
-
-			var _result = {
-				count: users.length,
-				data: users
-			};
-
-			res.json(_result);
-
-		});
+		);
 
 	},
 
@@ -75,14 +78,16 @@ var usersApi = {
 
 		var createUser = new UserModel(_user);
 
-		createUser.save(function(err, doc) {
+		createUser.save(function(err, user) {
+
 			if (err) {
 				// @todo diffrent status for diffrent type of error.
 				return res.status(500).send(err);
 			}
 
-
-			res.send(doc);
+			if (user) {
+				res.status(201).send('User created');
+			}
 
 		});
 	},
@@ -91,7 +96,7 @@ var usersApi = {
 	 * Find user by id.
 	 *
 	 * Method: GET
-	 * http://budmore.pl/api/v1/users/:_id
+	 * http://budmore.pl/api/v1/users/:id
 	 *
 	 * @param  {object} req Request data
 	 * @param  {object} res Respond data
@@ -100,16 +105,48 @@ var usersApi = {
 	getById: function(req, res) {
 		var _id = req.params.id;
 
-		UserModel.findById(_id, function(err, doc) {
+		// exclude the filed "password"
+		var projection = {
+			password: 0
+		};
+
+		UserModel.findById(_id, projection, function(err, user) {
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(404).send(err);
 			}
 
-			res.send(doc);
+
+			res.send(user);
 		});
-	},
+	}
+
+	/**
+	 * Update user.
+	 *
+	 * Method: PUT
+	 * http://budmore.pl/api/v1/users/:id
+	 *
+	 * @param  {object} req Request data
+	 * @param  {object} res Respond data
+	 * @return {object}
+	 */
+	// updateById: function(req, res) {
+
+	// 	var _id = req.params.id;
+
+	// 	var updatedContact = req.body;
+	// 	delete updatedContact._id;
 
 
+	// 	UserModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, user) {
+	// 		if (err) {
+	// 			return res.status(500).send(err);
+	// 		}
+
+	// 		res.send(user);
+
+	// 	});
+	// },
 };
 
 
