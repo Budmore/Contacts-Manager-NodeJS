@@ -1,15 +1,15 @@
 var assert  = require('chai').assert;
 var request = require('superagent');
-
 var server  = require('../../app/server');
 var config  = require('../../config');
+var scrypt  = require('scrypt');
+
 var port    = config.port;
 var version = config.version;
 var baseUrl = 'http://localhost:' + port + version;
+var UserModel = require('../../app/models/user');
 
-var ContactModel = require('../../app/models/contact');
-
-describe('Contacts API', function() {
+describe('User API', function() {
 	'use strict';
 
 	before(function(done) {
@@ -20,44 +20,39 @@ describe('Contacts API', function() {
 		server.stop(done);
 	});
 
-	it('should get isAlive message from the server', function(done) {
-		request
-			.get(baseUrl + '/')
-			.end(function(err, res) {
-				var _msg = 'isAlive';
-				assert.isNull(err);
-				assert.ok(res);
-				assert.equal(res.text, _msg);
-				assert.equal(res.status, 200);
-				done();
-			});
-	});
+	it('should get all contacts', function(done) {
 
-	it('should get all contacts from DB', function(done) {
+
 		request
-			.get(baseUrl + '/contacts')
+			.get(baseUrl + '/users')
 			.end(function(err, res) {
 				assert.isNull(err);
+				assert.isObject(res.body);
+				assert.equal(res.status, 200);
 				assert.isArray(res.body.data);
-				assert.equal(res.status, 200);
+
 				done();
 			});
+
 	});
 
-	it('should create new contact', function(done) {
+
+	it('should create new user and verify hash password', function(done) {
 
 		var _data = {
-			firstname: 'Jakub',
-			lastname: 'Mach',
-			dates: [{
-				date: new Date()
-			}]
+			email: 'jakubo@2.pl',
+			password: '[secret]'
 		};
-
 		request
-			.post(baseUrl + '/contacts')
+			.post(baseUrl + '/users')
 			.send(_data)
 			.end(function(err, res) {
+				var hash = res.body.password;
+				var plainPassword = _data.password;
+				var verified = scrypt.verifyHashSync(hash, plainPassword);
+				assert.isTrue(verified);
+
+
 				assert.isNull(err);
 				assert.isObject(res.body);
 				assert.equal(res.status, 200);
@@ -66,8 +61,8 @@ describe('Contacts API', function() {
 			});
 
 	});
-
-	describe('prams with id', function() {
+/**
+	xdescribe('prams with id', function() {
 		var mockedContact = {
 			_id: '55166e70fb1e9a18818ad8fd',
 			firstname: 'Jakub',
@@ -168,4 +163,6 @@ describe('Contacts API', function() {
 		});
 
 	});
+
+*/
 });

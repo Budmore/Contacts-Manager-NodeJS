@@ -15,8 +15,7 @@ var cronJobs   = require('../app/services/cron-jobs');
 
 // CONFIGURATION
 // -----------------------------------------------------------------------------
-var port = process.env.PORT || 9010;
-mongoose.connect(config.db.development);
+var port = process.env.PORT || config.port;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,8 +23,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 if (!process.env.SPEC) {
 	process.env[config.environment] = true; // Environment
+	mongoose.connect(config.db.spec);
+} else {
+	mongoose.connect(config.db[config.environment.toLowerCase()]);
 }
-
 
 
 
@@ -82,7 +83,8 @@ app.use(allowCrossDomain);
 // -----------------------------------------------------------------------------
 
 var router = express.Router();
-var api = require('./api/contacts-api');
+var contactsApi = require('./api/contacts-api');
+var usersApi = require('./api/users-api');
 
 
 router.get('/', function(req, res) {
@@ -91,14 +93,22 @@ router.get('/', function(req, res) {
 
 router
 	// Contacts
-	.post('/contacts', api.create)
-	.get('/contacts', api.getAll)
-	.get('/contacts/:id', api.getById)
-	.put('/contacts/:id', api.updateById)
-	.delete('/contacts/:id', api.deleteById);
+	.post('/contacts', contactsApi.create)
+	.get('/contacts', contactsApi.getAll)
+	.get('/contacts/:id', contactsApi.getById)
+	.put('/contacts/:id', contactsApi.updateById)
+	.delete('/contacts/:id', contactsApi.deleteById)
+
+	// Users
+	.post('/users', usersApi.create)
+	.get('/users', usersApi.getAll)
+	.get('/users/:id', usersApi.getById)
+	// .put('/users/:id', usersApi.updateById)
+	// .patch('/users/:id', usersApi.updateById)
+	// .delete('/users/:id', usersApi.deleteById);
 
 
-
-app.use('/api/v1', router);
+//Add url prefix eg.'/api/v1'
+app.use(config.version, router);
 
 
