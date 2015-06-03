@@ -1,15 +1,15 @@
 var assert  = require('chai').assert;
 var request = require('superagent');
-
 var server  = require('../../app/server');
 var config  = require('../../config');
+var scrypt  = require('scrypt');
+
 var port    = config.port;
 var version = config.version;
 var baseUrl = 'http://localhost:' + port + version;
+var UserModel = require('../../app/models/user');
 
-var ContactModel = require('../../app/models/contact');
-
-describe('Contacts API', function() {
+describe('User API', function() {
 	'use strict';
 
 	before(function(done) {
@@ -20,47 +20,35 @@ describe('Contacts API', function() {
 		server.stop(done);
 	});
 
-	it('should get isAlive message from the server', function(done) {
-		request
-			.get(baseUrl + '/')
-			.end(function(err, res) {
-				var _msg = 'isAlive';
-				assert.isNull(err);
-				assert.ok(res);
-				assert.equal(res.text, _msg);
-				assert.equal(res.status, 200);
-				done();
-			});
-	});
+	it('should get all contacts', function(done) {
 
-	it('should get all contacts from DB', function(done) {
-		request
-			.get(baseUrl + '/contacts')
-			.end(function(err, res) {
-				assert.isNull(err);
-				assert.isArray(res.body.data);
-				assert.equal(res.status, 200);
-				done();
-			});
-	});
-
-	it('should create new contact', function(done) {
-
-		var _data = {
-			firstname: 'Jakub',
-			lastname: 'Mach',
-			dates: [{
-				date: new Date()
-			}]
-		};
 
 		request
-			.post(baseUrl + '/contacts')
-			.send(_data)
+			.get(baseUrl + '/users')
 			.end(function(err, res) {
 				assert.isNull(err);
 				assert.isObject(res.body);
 				assert.equal(res.status, 200);
+				assert.isArray(res.body.data);
+
+				done();
+			});
+
+	});
+
+
+	it('should create new user and verify hash password', function(done) {
+
+		var _data = {
+			email: 'jakubo@2.pl',
+			password: '[secret]'
+		};
+		request
+			.post(baseUrl + '/users')
+			.send(_data)
+			.end(function(err, res) {
+				assert.isNull(err);
+				assert.equal(res.status, 201);
 
 				done();
 			});
@@ -68,16 +56,15 @@ describe('Contacts API', function() {
 	});
 
 	describe('prams with id', function() {
-		var mockedContact = {
+		var mockedUser = {
 			_id: '55166e70fb1e9a18818ad8fd',
-			firstname: 'Jakub',
-			lastname: 'Mach',
-			nickname: 'Budmore'
+			email: 'jakub@o2.pl',
+			password: '[secret]'
 		};
 
 		beforeEach('Create model with id (to test on it)',function(done) {
 
-			var createContact = new ContactModel(mockedContact);
+			var createContact = new UserModel(mockedUser);
 
 			createContact.save(function(err, doc) {
 				assert.isNull(err);
@@ -89,15 +76,17 @@ describe('Contacts API', function() {
 		});
 
 
-		it('should get contact by id', function(done) {
+		it('should get user by id', function(done) {
 
 			request
-				.get(baseUrl + '/contacts/' + mockedContact._id)
+				.get(baseUrl + '/users/' + mockedUser._id)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.isObject(res);
-					assert.equal(res.body._id, mockedContact._id);
-					assert.equal(res.body.lastname, mockedContact.lastname);
+
+					assert.equal(res.body._id, mockedUser._id);
+					assert.equal(res.body.email, mockedUser.email);
+					assert.isUndefined(res.body.password);
 					assert.equal(res.status, 200);
 					done();
 				});
@@ -105,14 +94,15 @@ describe('Contacts API', function() {
 		});
 
 
-		it.skip('should get 404 if contact does not exists', function(done) {
+		it('should get 404 if contact does not exists', function(done) {
 
 			request
-				.get(baseUrl + '/contacts/fake-id')
+				.get(baseUrl + '/users/fake-id')
 				.end(function(err, res) {
-					assert.isNull(err);
+					assert.isObject(err);
 					assert.isObject(res);
 					assert.equal(res.status, 404);
+
 					done();
 				});
 
@@ -122,25 +112,24 @@ describe('Contacts API', function() {
 		it('should update existing contact', function(done) {
 			var updatedContact = {
 				_id: '55166e70fb1e9a18818ad8fd',
-				firstname: 'Feliks',
-				lastname: 'Mach',
-				sone: 'aala'
+				email: 'test@aa.com',
+				// password: 'some'
 			};
 
 			request
-				.put(baseUrl + '/contacts/' + mockedContact._id)
+				.put(baseUrl + '/contacts/' + mockedUser._id)
 				.send(updatedContact)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.equal(res.status, 200);
 					assert.equal(res.body.firstname, updatedContact.firstname);
-					assert.equal(res.body.nickname, mockedContact.nickname);
+					assert.equal(res.body.nickname, mockedUser.nickname);
 					done();
 				});
 		});
 
 
-		it('should remove existing contact', function(done) {
+		it.skip('should remove existing contact', function(done) {
 			var countBefore, countAfter;
 
 			// Count documents before
@@ -150,7 +139,7 @@ describe('Contacts API', function() {
 
 			// Delete Request
 			request
-				.del(baseUrl + '/contacts/' + mockedContact._id)
+				.del(baseUrl + '/contacts/' + mockedUser._id)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.equal(res.status, 200);
@@ -168,4 +157,6 @@ describe('Contacts API', function() {
 		});
 
 	});
+
+
 });
