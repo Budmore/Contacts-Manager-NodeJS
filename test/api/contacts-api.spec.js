@@ -105,12 +105,12 @@ describe('Contacts API', function() {
 		});
 
 
-		it.skip('should get 404 if contact does not exists', function(done) {
+		it('should get 404 if contact does not exists', function(done) {
 
 			request
 				.get(baseUrl + '/contacts/fake-id')
 				.end(function(err, res) {
-					assert.isNull(err);
+					assert.isDefined(err);
 					assert.isObject(res);
 					assert.equal(res.status, 404);
 					done();
