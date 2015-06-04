@@ -85,6 +85,7 @@ app.use(allowCrossDomain);
 var router = express.Router();
 var contactsApi = require('./api/contacts-api');
 var usersApi = require('./api/users-api');
+var authService = require('./services/auth/auth-service');
 
 
 router.get('/', function(req, res) {
@@ -100,12 +101,16 @@ router
 	.delete('/contacts/:id', contactsApi.deleteById)
 
 	// Users
+	// @TODO: Restrict access for unauthorized users.
 	.post('/users', usersApi.create)
 	.get('/users', usersApi.getAll)
 	.get('/users/:id', usersApi.getById)
 	.put('/users/:id', usersApi.updateById)
-	.delete('/users/:id', usersApi.deleteById);
+	.delete('/users/:id', usersApi.deleteById)
 
+	// Auth
+	.post('/users/login', authService.login);
+	// .get('/users/me', authService.validateToken);
 
 //Add url prefix eg.'/api/v1'
 app.use(config.version, router);
