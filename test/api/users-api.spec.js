@@ -113,17 +113,30 @@ describe('User API', function() {
 			var updatedContact = {
 				_id: '55166e70fb1e9a18818ad8fd',
 				email: 'test@aa.com',
-				// password: 'some'
+				notificationsTypes: {
+					email: true,
+					sms: false
+				},
+				recipients: {
+					emails: ['lore@o2.pl', 'invalid-email', 'bogo@go.pl'],
+					phones: ['+48 500 100 100']
+				}
 			};
 
 			request
-				.put(baseUrl + '/contacts/' + mockedUser._id)
+				.put(baseUrl + '/users/' + mockedUser._id)
 				.send(updatedContact)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.equal(res.status, 200);
-					assert.equal(res.body.firstname, updatedContact.firstname);
-					assert.equal(res.body.nickname, mockedUser.nickname);
+					assert.equal(res.body.email, updatedContact.email);
+
+					assert.isUndefined(res.body.password);
+
+					var emailsBefore = updatedContact.recipients.emails.length;
+					var emailsAfter = res.body.recipients.emails.length;
+					assert.equal(emailsAfter, emailsBefore - 1);
+
 					done();
 				});
 		});

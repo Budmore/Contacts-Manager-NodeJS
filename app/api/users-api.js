@@ -1,4 +1,5 @@
 'use strict';
+var _         = require('lodash');
 var scrypt    = require('scrypt');
 var validator = require('validator');
 var UserModel = require('../models/user');
@@ -65,7 +66,7 @@ var usersApi = {
 		var _user = {
 			email: req.body.email,
 			password: hashedPassword,
-			notificationsType: {
+			notificationsTypes: {
 				email: false,
 				sms: false
 			},
@@ -118,10 +119,10 @@ var usersApi = {
 
 			res.send(user);
 		});
-	}
+	},
 
 	/**
-	 * Update user.
+	 * Update user. Without password
 	 *
 	 * Method: PUT
 	 * http://budmore.pl/api/v1/users/:id
@@ -130,23 +131,54 @@ var usersApi = {
 	 * @param  {object} res Respond data
 	 * @return {object}
 	 */
-	// updateById: function(req, res) {
+	updateById: function(req, res) {
+		// Validate user root email
+		var reqEmail = req.body.email;
+		if (!reqEmail || !validator.isEmail(reqEmail)) {
+			return res.status(400).send();
+		}
 
-	// 	var _id = req.params.id;
 
-	// 	var updatedContact = req.body;
-	// 	delete updatedContact._id;
+		var updatedContact = {
+			notificationsTypes: {},
+			recipients: {}
+		};
+
+		var _id = req.params.id;
+		var recipients = req.body.recipients;
+
+		updatedContact.email = reqEmail;
+		updatedContact.phone = req.body.phone || null;
+		updatedContact.image = req.body.image || null;
+		updatedContact.notificationsTypes = req.body.notificationsTypes;
+		updatedContact.recipients.phones = recipients.phones;
 
 
-	// 	UserModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, user) {
-	// 		if (err) {
-	// 			return res.status(500).send(err);
-	// 		}
+		// Validate emails
+		if (recipients && recipients.emails) {
+			var parsedArray = recipients.emails.filter(function(email) {
+				if (validator.isEmail(email)) {
+					return true;
+				}
+			});
+			updatedContact.recipients.emails = parsedArray;
+		}
 
-	// 		res.send(user);
 
-	// 	});
-	// },
+		// Update model
+		UserModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, user) {
+			if (err) {
+				return res.status(500).send(err);
+			}
+
+
+			var copyUser = JSON.parse(JSON.stringify(user));
+			delete copyUser.password;
+
+			res.send(copyUser);
+
+		});
+	},
 };
 
 
@@ -156,6 +188,6 @@ module.exports = {
 	getAll: usersApi.getAll,
 	create: usersApi.create,
 	getById: usersApi.getById,
-	// updateById: contacts.updateById,
-	// deleteById: contacts.deleteById
+	updateById: usersApi.updateById,
+	// deleteById: usersApi.deleteById
 };

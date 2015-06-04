@@ -6,7 +6,7 @@ var UserSchema = new Schema({
 	password: {type: String, maxlength: 128, minlength: 6, required: true },
 	phone: {type: String, maxlength: 60},
 	image: {type: String, maxlength: 2000},
-	notificationsType: {
+	notificationsTypes: {
 		email: Boolean,
 		sms: Boolean
 	},

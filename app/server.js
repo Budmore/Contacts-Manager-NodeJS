@@ -103,7 +103,7 @@ router
 	.post('/users', usersApi.create)
 	.get('/users', usersApi.getAll)
 	.get('/users/:id', usersApi.getById)
-	// .put('/users/:id', usersApi.updateById)
+	.put('/users/:id', usersApi.updateById)
 	// .patch('/users/:id', usersApi.updateById)
 	// .delete('/users/:id', usersApi.deleteById);
 
