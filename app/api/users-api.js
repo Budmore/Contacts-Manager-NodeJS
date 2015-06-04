@@ -87,7 +87,11 @@ var usersApi = {
 			}
 
 			if (user) {
-				res.status(201).send('User created');
+
+				var userCopy = JSON.parse(JSON.stringify(user));
+				delete userCopy.password;
+
+				res.status(201).send(userCopy);
 			}
 
 		});
@@ -104,7 +108,7 @@ var usersApi = {
 	 * @return {object}
 	 */
 	getById: function(req, res) {
-		var _id = req.params.id;
+		var _id = req.params && req.params.id;
 
 		// exclude the filed "password"
 		var projection = {
@@ -144,7 +148,7 @@ var usersApi = {
 			recipients: {}
 		};
 
-		var _id = req.params.id;
+		var _id = req.params && req.params.id;
 		var recipients = req.body.recipients;
 
 		updatedContact.email = reqEmail;
@@ -168,7 +172,7 @@ var usersApi = {
 		// Update model
 		UserModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, user) {
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(404).send(err);
 			}
 
 
@@ -179,6 +183,30 @@ var usersApi = {
 
 		});
 	},
+
+	/**
+	 * Delete user.
+	 *
+	 * Method: DELETE
+	 * http://budmore.pl/api/v1/users/:id
+	 *
+	 * @param  {object} req Request data
+	 * @param  {object} res Respond data
+	 * @return {object}
+	 */
+	deleteById: function(req, res) {
+
+		var _id = req.params && req.params.id;
+
+		UserModel.findByIdAndRemove(_id, function(err) {
+
+			if (err) {
+				return res.status(404).send(err);
+			}
+
+			res.status(200).send();
+		});
+	}
 };
 
 
@@ -189,5 +217,5 @@ module.exports = {
 	create: usersApi.create,
 	getById: usersApi.getById,
 	updateById: usersApi.updateById,
-	// deleteById: usersApi.deleteById
+	deleteById: usersApi.deleteById
 };

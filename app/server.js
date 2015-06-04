@@ -104,8 +104,7 @@ router
 	.get('/users', usersApi.getAll)
 	.get('/users/:id', usersApi.getById)
 	.put('/users/:id', usersApi.updateById)
-	// .patch('/users/:id', usersApi.updateById)
-	// .delete('/users/:id', usersApi.deleteById);
+	.delete('/users/:id', usersApi.deleteById);
 
 
 //Add url prefix eg.'/api/v1'

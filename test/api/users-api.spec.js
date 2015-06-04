@@ -124,7 +124,7 @@ describe('User API', function() {
 			};
 
 			request
-				.put(baseUrl + '/users/' + mockedUser._id)
+				.put(baseUrl + '/users/' + updatedContact._id)
 				.send(updatedContact)
 				.end(function(err, res) {
 					assert.isNull(err);
@@ -142,23 +142,23 @@ describe('User API', function() {
 		});
 
 
-		it.skip('should remove existing contact', function(done) {
+		it('should remove existing contact', function(done) {
 			var countBefore, countAfter;
 
 			// Count documents before
-			ContactModel.count({}, function(err, count) {
+			UserModel.count({}, function(err, count) {
 				countBefore = count;
 			});
 
 			// Delete Request
 			request
-				.del(baseUrl + '/contacts/' + mockedUser._id)
+				.del(baseUrl + '/users/' + mockedUser._id)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.equal(res.status, 200);
 
 					// Count documents after DELETE
-					ContactModel.count({}, function(err, count) {
+					UserModel.count({}, function(err, count) {
 						countAfter = count;
 
 						assert.equal(countBefore, 1);
