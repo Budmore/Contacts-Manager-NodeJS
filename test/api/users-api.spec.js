@@ -2,11 +2,10 @@ var assert  = require('chai').assert;
 var request = require('superagent');
 var server  = require('../../app/server');
 var config  = require('../../config');
-var scrypt  = require('scrypt');
 
-var port    = config.port;
-var version = config.version;
-var baseUrl = 'http://localhost:' + port + version;
+var port      = config.port;
+var version   = config.version;
+var baseUrl   = 'http://localhost:' + port + version;
 var UserModel = require('../../app/models/user');
 
 describe('User API', function() {
@@ -37,7 +36,7 @@ describe('User API', function() {
 	});
 
 
-	it('should create new user and verify hash password', function(done) {
+	it('should create new user', function(done) {
 
 		var _data = {
 			email: 'jakubo@2.pl',
@@ -48,6 +47,7 @@ describe('User API', function() {
 			.send(_data)
 			.end(function(err, res) {
 				assert.isNull(err);
+				assert.isUndefined(res.body.password);
 				assert.equal(res.status, 201);
 
 				done();
@@ -55,7 +55,7 @@ describe('User API', function() {
 
 	});
 
-	describe('prams with id', function() {
+	describe('with id', function() {
 		var mockedUser = {
 			_id: '55166e70fb1e9a18818ad8fd',
 			email: 'jakub@o2.pl',

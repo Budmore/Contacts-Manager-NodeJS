@@ -1,5 +1,4 @@
 'use strict';
-var _         = require('lodash');
 var scrypt    = require('scrypt');
 var validator = require('validator');
 var UserModel = require('../models/user');

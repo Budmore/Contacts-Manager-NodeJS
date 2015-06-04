@@ -67,7 +67,7 @@ describe('Contacts API', function() {
 
 	});
 
-	describe('prams with id', function() {
+	describe('with id', function() {
 		var mockedContact = {
 			_id: '55166e70fb1e9a18818ad8fd',
 			firstname: 'Jakub',
