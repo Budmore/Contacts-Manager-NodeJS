@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
 	email: {type: String, maxlength: 254, required: true, unique: true },
-	password: {type: String, maxlength: 128, minlength: 6, required: true },
+	password: {type: String, maxlength: 128, minlength: 6, required: true, select: false},
 	phone: {type: String, maxlength: 60},
 	image: {type: String, maxlength: 2000},
 	notificationsTypes: {

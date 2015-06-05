@@ -140,7 +140,7 @@ var contacts = {
 				return res.status(404).send(err);
 			}
 
-			res.status(200).send();
+			res.status(204).send('Resource deleted successfully');
 		});
 	}
 

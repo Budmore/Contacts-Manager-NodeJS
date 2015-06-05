@@ -19,10 +19,9 @@ var usersApi = {
 	getAll: function(req, res) {
 		UserModel
 			.find({})
-			.populate('password') //Exclude the password field
 			.exec(function(err, users) {
 				if (err) {
-					return res.status(500).send.err;
+					return res.status(500).send(err);
 				}
 
 				var _result = {
@@ -66,7 +65,7 @@ var usersApi = {
 			email: req.body.email,
 			password: hashedPassword,
 			notificationsTypes: {
-				email: false,
+				email: true,
 				sms: false
 			},
 			recipients: {
@@ -86,10 +85,8 @@ var usersApi = {
 			}
 
 			if (user) {
-
 				var userCopy = JSON.parse(JSON.stringify(user));
 				delete userCopy.password;
-
 				res.status(201).send(userCopy);
 			}
 
@@ -109,16 +106,10 @@ var usersApi = {
 	getById: function(req, res) {
 		var _id = req.params && req.params.id;
 
-		// exclude the filed "password"
-		var projection = {
-			password: 0
-		};
-
-		UserModel.findById(_id, projection, function(err, user) {
+		UserModel.findById(_id, function(err, user) {
 			if (err) {
 				return res.status(404).send(err);
 			}
-
 
 			res.send(user);
 		});
@@ -203,7 +194,7 @@ var usersApi = {
 				return res.status(404).send(err);
 			}
 
-			res.status(200).send();
+			res.status(204).send('Resource deleted successfully');
 		});
 	}
 };

@@ -29,36 +29,40 @@ var auth = {
 			return;
 		}
 
-		//Find user
-		UserModel.findOne({email: email}, function(err, user) {
-			var isExist, isVerified;
+		//Find user\
 
-			// Validate password
-			if (user && user.password) {
-				isExist = true;
-				isVerified = scrypt.verifyHashSync(user.password, password);
+		UserModel
+			.findOne({email: email})
+			.select('_id password email')
+			.exec(function(err, user) {
+				var isExist, isVerified;
+
+				// Validate password
+				if (user && user.password) {
+					isExist = true;
+					isVerified = scrypt.verifyHashSync(user.password, password);
+				}
+
+				// Success - generate and return token
+				if (isExist && isVerified) {
+
+					var result = {
+						token: generateToken(user)
+					};
+
+					res.send(result);
+
+				// Error - invalid credential
+				} else {
+					res.status(401).send({
+						status: 401,
+						message: 'Invalid credentials'
+					});
+					return;
+				}
+
 			}
-
-			// Success - generate and return token
-			if (isExist && isVerified) {
-
-				var result = {
-					token: generateToken(user)
-				};
-
-				res.send(result);
-
-			// Error - invalid credential
-			} else {
-				res.status(401).send({
-					status: 401,
-					message: 'Invalid credentials'
-				});
-				return;
-			}
-
-
-		});
+		);
 
 
 	},
