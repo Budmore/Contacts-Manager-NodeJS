@@ -1,18 +1,18 @@
 'use strict';
 
-var jwt            = require('jsonwebtoken');
-var httpMocks      = require('node-mocks-http');
-var chai           = require('chai');
-var chaiAsPromised = require('chai-as-promised');
 var config         = require('../../config');
 var middleware     = require('../../app/middlewares/token-verify');
 
-var req, res;
+var jwt            = require('jsonwebtoken');
+var httpMocks      = require('node-mocks-http');
+var chaiAsPromised = require('chai-as-promised');
+var chai           = require('chai');
 var assert         = chai.assert;
-var expect         = chai.expect;
+
 chai.use(chaiAsPromised);
 
 
+var req, res;
 beforeEach(function() {
 	req = httpMocks.createRequest();
 	res = httpMocks.createResponse();
@@ -22,7 +22,8 @@ describe('Middlewares "token-verify"', function() {
 
 	it('should no token - 403 rejected', function() {
 
-		return expect(middleware.tokenVerify(req, res)).to.be.rejected
+
+		return assert.isRejected(middleware.tokenVerify(req, res))
 			.then(function() {
 				assert.equal(res.statusCode, 403);
 			});
@@ -35,7 +36,7 @@ describe('Middlewares "token-verify"', function() {
 		req.headers['x-access-token'] = 'blabla';
 
 
-		return expect(middleware.tokenVerify(req, res)).to.be.rejected
+		return assert.isRejected(middleware.tokenVerify(req, res))
 			.then(function() {
 				assert.equal(res.statusCode, 401);
 			});
@@ -53,7 +54,7 @@ describe('Middlewares "token-verify"', function() {
 		var token = jwt.sign(payload, config.secret);
 		req.query.token = token;
 
-		return expect(middleware.tokenVerify(req, res)).to.be.fulfilled
+		return assert.isFulfilled(middleware.tokenVerify(req, res))
 			.then(function() {
 				assert.equal(res.statusCode, 200);
 				assert.equal(req.decoded.email, payload.email);
