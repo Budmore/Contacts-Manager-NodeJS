@@ -18,8 +18,6 @@ var tokenVerify = function(req, res) {
 	var deferred = Q.defer();
 	var token = req.headers['x-access-token'] || req.body.token || req.query.token;
 
-	console.log('this in', token);
-
 	if (token) {
 		jwt.verify(token, config.secret, function(err, decoded) {
 			if (err) {

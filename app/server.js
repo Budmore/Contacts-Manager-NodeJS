@@ -65,15 +65,22 @@ new NodeCron({
 
 // MIDDLEWARES
 // -----------------------------------------------------------------------------
+var middleware = require('../app/middlewares/token-verify');
 
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:9000');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
+	res.header('Access-Control-Allow-Origin', config.siteUrl);
+	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+	res.header('Access-Control-Allow-Headers', 'Content-Type,x-access-token');
 
-    next();
+	next();
 };
 
+var tokenVerify = function(req, res, next) {
+	middleware.tokenVerify(req, res)
+		.then(function() { next(); })
+		.catch(res.json)
+		.done();
+};
 
 app.use(allowCrossDomain);
 
