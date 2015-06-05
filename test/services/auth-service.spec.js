@@ -30,7 +30,7 @@ describe('Module Auth: auth-service', function() {
 	beforeEach('Create some user', function(done){
 
 		request
-			.post(baseUrl + '/users')
+			.post(baseUrl + '/users/register')
 			.send(_mockedUser)
 			.end(function(err, res) {
 				// assert.isNull(err);

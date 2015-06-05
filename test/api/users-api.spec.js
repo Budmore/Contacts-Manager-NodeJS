@@ -43,7 +43,7 @@ describe('User API', function() {
 			password: '[secret]'
 		};
 		request
-			.post(baseUrl + '/users')
+			.post(baseUrl + '/users/register')
 			.send(_data)
 			.end(function(err, res) {
 				assert.isNull(err);
@@ -155,7 +155,7 @@ describe('User API', function() {
 				.del(baseUrl + '/users/' + mockedUser._id)
 				.end(function(err, res) {
 					assert.isNull(err);
-					assert.equal(res.status, 200);
+					assert.equal(res.status, 204);
 
 					// Count documents after DELETE
 					UserModel.count({}, function(err, count) {

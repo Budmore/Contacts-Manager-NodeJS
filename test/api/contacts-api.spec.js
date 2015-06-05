@@ -153,7 +153,7 @@ describe('Contacts API', function() {
 				.del(baseUrl + '/contacts/' + mockedContact._id)
 				.end(function(err, res) {
 					assert.isNull(err);
-					assert.equal(res.status, 200);
+					assert.equal(res.status, 204);
 
 					// Count documents after DELETE
 					ContactModel.count({}, function(err, count) {
