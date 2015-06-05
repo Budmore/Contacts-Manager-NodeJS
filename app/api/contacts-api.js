@@ -15,7 +15,7 @@ var contacts = {
 	 * @return {array}
 	 */
 	getAll: function(req, res) {
-
+		console.log('req.decoded', req.decoded);
 		ContactModel.find({}, function(err, doc) {
 			if (err) {
 				return res.status(500).send(err);
