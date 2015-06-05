@@ -74,7 +74,9 @@ var allowCrossDomain = function(req, res, next) {
     next();
 };
 
+
 app.use(allowCrossDomain);
+
 
 
 
@@ -85,12 +87,14 @@ app.use(allowCrossDomain);
 var router = express.Router();
 var contactsApi = require('./api/contacts-api');
 var usersApi = require('./api/users-api');
+var authService = require('./services/auth/auth-service');
 
 
 router.get('/', function(req, res) {
 	res.send('isAlive');
 });
 
+// @TODO: Restrict access for unauthorized users.
 router
 	// Contacts
 	.post('/contacts', contactsApi.create)
@@ -100,13 +104,14 @@ router
 	.delete('/contacts/:id', contactsApi.deleteById)
 
 	// Users
-	.post('/users', usersApi.create)
-	.get('/users', usersApi.getAll)
-	.get('/users/:id', usersApi.getById)
-	// .put('/users/:id', usersApi.updateById)
-	// .patch('/users/:id', usersApi.updateById)
-	// .delete('/users/:id', usersApi.deleteById);
+	.get('/users', usersApi.getAll) // isSuperadmin
+	.get('/users/:id', usersApi.getById) // isOwner
+	.put('/users/:id', usersApi.updateById) // isOwner
+	.delete('/users/:id', usersApi.deleteById) // isOwner
 
+	// Auth
+	.post('/users/register', usersApi.create) // @TODO: respond with token
+	.post('/users/login', authService.login); // every
 
 //Add url prefix eg.'/api/v1'
 app.use(config.version, router);

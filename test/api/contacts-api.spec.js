@@ -67,7 +67,7 @@ describe('Contacts API', function() {
 
 	});
 
-	describe('prams with id', function() {
+	describe('with id', function() {
 		var mockedContact = {
 			_id: '55166e70fb1e9a18818ad8fd',
 			firstname: 'Jakub',
@@ -105,12 +105,12 @@ describe('Contacts API', function() {
 		});
 
 
-		it.skip('should get 404 if contact does not exists', function(done) {
+		it('should get 404 if contact does not exists', function(done) {
 
 			request
 				.get(baseUrl + '/contacts/fake-id')
 				.end(function(err, res) {
-					assert.isNull(err);
+					assert.isDefined(err);
 					assert.isObject(res);
 					assert.equal(res.status, 404);
 					done();
@@ -153,7 +153,7 @@ describe('Contacts API', function() {
 				.del(baseUrl + '/contacts/' + mockedContact._id)
 				.end(function(err, res) {
 					assert.isNull(err);
-					assert.equal(res.status, 200);
+					assert.equal(res.status, 204);
 
 					// Count documents after DELETE
 					ContactModel.count({}, function(err, count) {

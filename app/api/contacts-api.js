@@ -86,7 +86,7 @@ var contacts = {
 
 		ContactModel.findById(_id, function(err, doc) {
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(404).send(err);
 			}
 
 			res.send(doc);
@@ -113,7 +113,7 @@ var contacts = {
 
 		ContactModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, doc) {
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(404).send(err);
 			}
 
 			res.send(doc);
@@ -137,10 +137,10 @@ var contacts = {
 
 		ContactModel.findByIdAndRemove(_id, function(err) {
 			if (err) {
-				return res.status(500).send(err);
+				return res.status(404).send(err);
 			}
 
-			res.status(200).send();
+			res.status(204).send('Resource deleted successfully');
 		});
 	}
 

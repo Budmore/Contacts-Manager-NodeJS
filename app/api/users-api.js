@@ -19,10 +19,9 @@ var usersApi = {
 	getAll: function(req, res) {
 		UserModel
 			.find({})
-			.populate('password') //Exclude the password field
 			.exec(function(err, users) {
 				if (err) {
-					return res.status(500).send.err;
+					return res.status(500).send(err);
 				}
 
 				var _result = {
@@ -65,8 +64,8 @@ var usersApi = {
 		var _user = {
 			email: req.body.email,
 			password: hashedPassword,
-			notificationsType: {
-				email: false,
+			notificationsTypes: {
+				email: true,
 				sms: false
 			},
 			recipients: {
@@ -86,7 +85,9 @@ var usersApi = {
 			}
 
 			if (user) {
-				res.status(201).send('User created');
+				var userCopy = JSON.parse(JSON.stringify(user));
+				delete userCopy.password;
+				res.status(201).send(userCopy);
 			}
 
 		});
@@ -103,25 +104,19 @@ var usersApi = {
 	 * @return {object}
 	 */
 	getById: function(req, res) {
-		var _id = req.params.id;
+		var _id = req.params && req.params.id;
 
-		// exclude the filed "password"
-		var projection = {
-			password: 0
-		};
-
-		UserModel.findById(_id, projection, function(err, user) {
+		UserModel.findById(_id, function(err, user) {
 			if (err) {
 				return res.status(404).send(err);
 			}
 
-
 			res.send(user);
 		});
-	}
+	},
 
 	/**
-	 * Update user.
+	 * Update user. Without password
 	 *
 	 * Method: PUT
 	 * http://budmore.pl/api/v1/users/:id
@@ -130,23 +125,78 @@ var usersApi = {
 	 * @param  {object} res Respond data
 	 * @return {object}
 	 */
-	// updateById: function(req, res) {
+	updateById: function(req, res) {
+		// Validate user root email
+		var reqEmail = req.body.email;
+		if (!reqEmail || !validator.isEmail(reqEmail)) {
+			return res.status(400).send();
+		}
 
-	// 	var _id = req.params.id;
 
-	// 	var updatedContact = req.body;
-	// 	delete updatedContact._id;
+		var updatedContact = {
+			notificationsTypes: {},
+			recipients: {}
+		};
+
+		var _id = req.params && req.params.id;
+		var recipients = req.body.recipients;
+
+		updatedContact.email = reqEmail;
+		updatedContact.phone = req.body.phone || null;
+		updatedContact.image = req.body.image || null;
+		updatedContact.notificationsTypes = req.body.notificationsTypes;
+		updatedContact.recipients.phones = recipients.phones;
 
 
-	// 	UserModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, user) {
-	// 		if (err) {
-	// 			return res.status(500).send(err);
-	// 		}
+		// Validate emails
+		if (recipients && recipients.emails) {
+			var parsedArray = recipients.emails.filter(function(email) {
+				if (validator.isEmail(email)) {
+					return true;
+				}
+			});
+			updatedContact.recipients.emails = parsedArray;
+		}
 
-	// 		res.send(user);
 
-	// 	});
-	// },
+		// Update model
+		UserModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, user) {
+			if (err) {
+				return res.status(404).send(err);
+			}
+
+
+			var copyUser = JSON.parse(JSON.stringify(user));
+			delete copyUser.password;
+
+			res.send(copyUser);
+
+		});
+	},
+
+	/**
+	 * Delete user.
+	 *
+	 * Method: DELETE
+	 * http://budmore.pl/api/v1/users/:id
+	 *
+	 * @param  {object} req Request data
+	 * @param  {object} res Respond data
+	 * @return {object}
+	 */
+	deleteById: function(req, res) {
+
+		var _id = req.params && req.params.id;
+
+		UserModel.findByIdAndRemove(_id, function(err) {
+
+			if (err) {
+				return res.status(404).send(err);
+			}
+
+			res.status(204).send('Resource deleted successfully');
+		});
+	}
 };
 
 
@@ -156,6 +206,6 @@ module.exports = {
 	getAll: usersApi.getAll,
 	create: usersApi.create,
 	getById: usersApi.getById,
-	// updateById: contacts.updateById,
-	// deleteById: contacts.deleteById
+	updateById: usersApi.updateById,
+	deleteById: usersApi.deleteById
 };

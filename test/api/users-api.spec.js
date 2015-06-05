@@ -2,11 +2,10 @@ var assert  = require('chai').assert;
 var request = require('superagent');
 var server  = require('../../app/server');
 var config  = require('../../config');
-var scrypt  = require('scrypt');
 
-var port    = config.port;
-var version = config.version;
-var baseUrl = 'http://localhost:' + port + version;
+var port      = config.port;
+var version   = config.version;
+var baseUrl   = 'http://localhost:' + port + version;
 var UserModel = require('../../app/models/user');
 
 describe('User API', function() {
@@ -37,17 +36,18 @@ describe('User API', function() {
 	});
 
 
-	it('should create new user and verify hash password', function(done) {
+	it('should create new user', function(done) {
 
 		var _data = {
 			email: 'jakubo@2.pl',
 			password: '[secret]'
 		};
 		request
-			.post(baseUrl + '/users')
+			.post(baseUrl + '/users/register')
 			.send(_data)
 			.end(function(err, res) {
 				assert.isNull(err);
+				assert.isUndefined(res.body.password);
 				assert.equal(res.status, 201);
 
 				done();
@@ -55,7 +55,7 @@ describe('User API', function() {
 
 	});
 
-	describe('prams with id', function() {
+	describe('with id', function() {
 		var mockedUser = {
 			_id: '55166e70fb1e9a18818ad8fd',
 			email: 'jakub@o2.pl',
@@ -113,39 +113,52 @@ describe('User API', function() {
 			var updatedContact = {
 				_id: '55166e70fb1e9a18818ad8fd',
 				email: 'test@aa.com',
-				// password: 'some'
+				notificationsTypes: {
+					email: true,
+					sms: false
+				},
+				recipients: {
+					emails: ['lore@o2.pl', 'invalid-email', 'bogo@go.pl'],
+					phones: ['+48 500 100 100']
+				}
 			};
 
 			request
-				.put(baseUrl + '/contacts/' + mockedUser._id)
+				.put(baseUrl + '/users/' + updatedContact._id)
 				.send(updatedContact)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.equal(res.status, 200);
-					assert.equal(res.body.firstname, updatedContact.firstname);
-					assert.equal(res.body.nickname, mockedUser.nickname);
+					assert.equal(res.body.email, updatedContact.email);
+
+					assert.isUndefined(res.body.password);
+
+					var emailsBefore = updatedContact.recipients.emails.length;
+					var emailsAfter = res.body.recipients.emails.length;
+					assert.equal(emailsAfter, emailsBefore - 1);
+
 					done();
 				});
 		});
 
 
-		it.skip('should remove existing contact', function(done) {
+		it('should remove existing contact', function(done) {
 			var countBefore, countAfter;
 
 			// Count documents before
-			ContactModel.count({}, function(err, count) {
+			UserModel.count({}, function(err, count) {
 				countBefore = count;
 			});
 
 			// Delete Request
 			request
-				.del(baseUrl + '/contacts/' + mockedUser._id)
+				.del(baseUrl + '/users/' + mockedUser._id)
 				.end(function(err, res) {
 					assert.isNull(err);
-					assert.equal(res.status, 200);
+					assert.equal(res.status, 204);
 
 					// Count documents after DELETE
-					ContactModel.count({}, function(err, count) {
+					UserModel.count({}, function(err, count) {
 						countAfter = count;
 
 						assert.equal(countBefore, 1);
