@@ -104,11 +104,11 @@ router.get('/', function(req, res) {
 // @TODO: Restrict access for unauthorized users.
 router
 	// Contacts
-	.post('/contacts', contactsApi.create)
-	.get('/contacts', contactsApi.getAll)
-	.get('/contacts/:id', contactsApi.getById)
-	.put('/contacts/:id', contactsApi.updateById)
-	.delete('/contacts/:id', contactsApi.deleteById)
+	.post('/contacts', tokenVerify, contactsApi.create)
+	.get('/contacts', tokenVerify, contactsApi.getAll)
+	.get('/contacts/:id', tokenVerify, contactsApi.getById)
+	.put('/contacts/:id', tokenVerify, contactsApi.updateById)
+	.delete('/contacts/:id', tokenVerify, contactsApi.deleteById)
 
 	// Users
 	.get('/users', usersApi.getAll) // isSuperadmin
