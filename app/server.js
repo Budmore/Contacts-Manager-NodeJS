@@ -70,7 +70,7 @@ var middleware = require('../app/middlewares/token-verify');
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', config.siteUrl);
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-	res.header('Access-Control-Allow-Headers', 'Content-Type,x-access-token');
+	res.header('Access-Control-Allow-Headers', 'Content-Type');
 
 	next();
 };
@@ -111,10 +111,10 @@ router
 	.delete('/contacts/:id', tokenVerify, contactsApi.deleteById)
 
 	// Users
-	.get('/users', usersApi.getAll) // isSuperadmin
-	.get('/users/:id', usersApi.getById) // isOwner
-	.put('/users/:id', usersApi.updateById) // isOwner
-	.delete('/users/:id', usersApi.deleteById) // isOwner
+	.get('/users', tokenVerify, usersApi.getAll) // isSuperadmin
+	.get('/users/:id', tokenVerify, usersApi.getById) // isSuperadmin || isOwner
+	.put('/users/:id', tokenVerify, usersApi.updateById) // isSuperadmin || isOwner
+	.delete('/users/:id', tokenVerify, usersApi.deleteById) // isSuperadmin || isOwner
 
 	// Auth
 	.post('/users/register', usersApi.create) // @TODO: respond with token
