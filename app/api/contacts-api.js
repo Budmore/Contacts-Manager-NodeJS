@@ -15,15 +15,19 @@ var contacts = {
 	 * @return {array}
 	 */
 	getAll: function(req, res) {
-		console.log('req.decoded', req.decoded);
-		ContactModel.find({}, function(err, doc) {
+
+		var query = {
+			_userid: req.decoded._id
+		};
+
+		ContactModel.find(query, function(err, contacts) {
 			if (err) {
 				return res.status(500).send(err);
 			}
 
 			var _result = {
-				count: doc.length,
-				data: doc
+				count: contacts.length,
+				data: contacts
 			};
 
 			res.json(_result);
@@ -45,6 +49,7 @@ var contacts = {
 	create: function(req, res) {
 
 		var _contact = {
+			_userid: req.decoded._id,
 			firstname: req.body.firstname,
 			lastname: req.body.lastname,
 			nickname: req.body.nickname,
@@ -82,9 +87,14 @@ var contacts = {
 	 * @return {object}
 	 */
 	getById: function(req, res) {
-		var _id = req.params.id;
 
-		ContactModel.findById(_id, function(err, doc) {
+		var query = {
+			_userid: req.decoded._id,
+			_id: req.params.id
+		};
+
+
+		ContactModel.findOne(query, function(err, doc) {
 			if (err) {
 				return res.status(404).send(err);
 			}
@@ -105,13 +115,17 @@ var contacts = {
 	 */
 	updateById: function(req, res) {
 
-		var _id = req.params.id;
+		var query = {
+			_userid: req.decoded._id,
+			_id: req.params.id
+		};
 
 		var updatedContact = req.body;
 		delete updatedContact._id;
+		delete updatedContact._userid;
 
 
-		ContactModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, doc) {
+		ContactModel.findOneAndUpdate(query, {$set: updatedContact}, function(err, doc) {
 			if (err) {
 				return res.status(404).send(err);
 			}
@@ -133,9 +147,12 @@ var contacts = {
 	 */
 	deleteById: function(req, res) {
 
-		var _id = req.params.id;
+		var query = {
+			_userid: req.decoded._id,
+			_id: req.params.id
+		};
 
-		ContactModel.findByIdAndRemove(_id, function(err) {
+		ContactModel.findOneAndRemove(query, function(err) {
 			if (err) {
 				return res.status(404).send(err);
 			}
