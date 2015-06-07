@@ -51,24 +51,6 @@ describe('User API', function() {
 
 	});
 
-	it('should create new user', function(done) {
-
-		var _data = {
-			email: 'jakubo@2.pl',
-			password: '[secret]'
-		};
-		request
-			.post(baseUrl + '/users/register')
-			.send(_data)
-			.end(function(err, res) {
-				assert.isNull(err);
-				assert.isUndefined(res.body.password);
-				assert.equal(res.status, 201);
-
-				done();
-			});
-
-	});
 
 	describe('with id', function() {
 		var mockedUser = {

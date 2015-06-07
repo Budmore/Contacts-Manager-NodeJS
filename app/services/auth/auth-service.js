@@ -3,6 +3,8 @@
 
 var jwt       = require('jsonwebtoken');
 var scrypt    = require('scrypt');
+var validator = require('validator');
+
 var config    = require('../../../config');
 var UserModel = require('../../models/user');
 
@@ -29,7 +31,6 @@ var auth = {
 			return;
 		}
 
-		//Find user\
 
 		UserModel
 			.findOne({email: email})
@@ -67,6 +68,93 @@ var auth = {
 
 	},
 
+	/**
+	 * Create new user, and generate JWT (JSON Web Token)
+	 *
+	 * Method: POST
+	 * http://budmore.pl/api/v1/users/register
+	 *
+	 * @param {Object} req Request data
+	 * @param {Object} res Respond data
+	 * return {Object}     User with token
+	 */
+	createUser: function(req, res) {
+
+		// Email validate
+		if (!validator.isEmail(req.body.email)) {
+			return res.status(400).send('Please enter a valid email address.');
+		}
+
+		// Password validate
+		if (!req.body.password || req.body.password.length < 6) {
+			return res.status(400).send('The password must be at least 6 characters');
+		}
+
+		var hashedPassword = scrypt.passwordHashSync(req.body.password, 0.01);
+
+
+		var _user = {
+			email: req.body.email,
+			password: hashedPassword,
+			notificationsTypes: {
+				email: true,
+				sms: false
+			},
+			recipients: {
+				emails: [],
+				phones: []
+			}
+		};
+
+
+		var createUser = new UserModel(_user);
+
+		createUser.save(function(err, user) {
+
+			if (err) {
+				return res.status(500).send(err);
+			}
+
+			if (user) {
+
+				var userCopy = JSON.parse(JSON.stringify(user)); // Copy user object
+				delete userCopy.password; // Remove hashed password
+				userCopy.token = generateToken(user); // Generate token
+
+				res.status(201).send(userCopy);
+			}
+
+		});
+	},
+
+
+	/**
+	 * Get user data by token
+	 *
+	 * @param  {object} req Request data
+	 * @param  {object} res Respond data
+	 * @return {Object}     User object
+	 */
+	getUserByToken: function(req, res) {
+		var tokenID = req.decoded && req.decoded._id;
+
+		if (!tokenID) {
+			res.status(401).send('Unauthorized');
+		}
+
+		var query = {
+			_id: tokenID
+		};
+
+		UserModel.findOne(query, function(err, user) {
+			if (err) {
+				return res.status(500).send(user);
+			}
+
+			res.send(user);
+		});
+	}
+
 };
 
 
@@ -93,5 +181,7 @@ function generateToken(user) {
 
 
 module.exports = {
-	login: auth.login
+	login: auth.login,
+	createUser: auth.createUser,
+	getUserByToken: auth.getUserByToken
 };

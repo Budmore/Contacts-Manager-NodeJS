@@ -10,6 +10,7 @@ var baseUrl   = 'http://localhost:' + port + version;
 
 var UserModel   = require('../../app/models/user');
 
+var globalToken;
 
 describe('Module Auth: auth-service', function() {
 	'use strict';
@@ -33,9 +34,11 @@ describe('Module Auth: auth-service', function() {
 			.post(baseUrl + '/users/register')
 			.send(_mockedUser)
 			.end(function(err, res) {
-				// assert.isNull(err);
 				assert.isUndefined(res.body.password);
+				assert.isDefined(res.body.token);
 				assert.equal(res.status, 201);
+
+				globalToken = res.body.token;
 
 				done();
 			});
@@ -57,7 +60,7 @@ describe('Module Auth: auth-service', function() {
 
 	});
 
-	it('should check login credential - error (no password)', function(done) {
+	it('should check login credential - 1 error (no password)', function(done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			password: ''
@@ -73,7 +76,7 @@ describe('Module Auth: auth-service', function() {
 			});
 	});
 
-	it('should check login credential - error (incorrect pass)', function(done) {
+	it('should check login credential - 2 error (incorrect pass)', function(done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			// password: _mockedUser.password
@@ -92,7 +95,7 @@ describe('Module Auth: auth-service', function() {
 			});
 	});
 
-	it('should check login credential - success (generateToken)', function(done) {
+	it('should check login credential - 3 success (generateToken)', function(done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			password: _mockedUser.password
@@ -111,6 +114,81 @@ describe('Module Auth: auth-service', function() {
 
 				done();
 			});
+	});
+
+
+	it('should createUser() - create new user - 1 all is OK', function(done) {
+
+		var _data = {
+			email: 'jakubo@2.pl',
+			password: '[secret]'
+		};
+
+		request
+			.post(baseUrl + '/users/register')
+			.send(_data)
+			.end(function(err, res) {
+				assert.equal(res.status, 201);
+				assert.isUndefined(res.body.password);
+				assert.isDefined(res.body.token);
+
+				done();
+			});
+
+	});
+
+	it('should createUser() - create new user - 2 incorect email', function(done) {
+
+		var _data = {
+			email: 'jakubo',
+			password: '[secret]'
+		};
+
+		request
+			.post(baseUrl + '/users/register')
+			.send(_data)
+			.end(function(err, res) {
+				assert.equal(res.status, 400);
+				assert.isUndefined(res.body.token);
+				assert.isUndefined(res.body.password);
+
+				done();
+			});
+
+	});
+
+	it('should createUser() - create new user - 2 incorect password', function(done) {
+
+		var _data = {
+			email: 'jaku@bo.com',
+			password: ''
+		};
+
+		request
+			.post(baseUrl + '/users/register')
+			.send(_data)
+			.end(function(err, res) {
+				assert.equal(res.status, 400);
+				done();
+			});
+
+	});
+
+
+	it('should get user only by token', function(done) {
+		request
+			.post(baseUrl + '/users/me')
+			.set('x-access-token', globalToken)
+			.end(function(err, res) {
+				assert.equal(res.status, 200);
+				assert.equal(res.body.email, _mockedUser.email);
+
+				assert.isDefined(res.body.recipients);
+				assert.isDefined(res.body.notificationsTypes);
+
+				done();
+			}) ;
+
 	});
 
 });
