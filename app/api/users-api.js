@@ -16,20 +16,18 @@ var usersApi = {
 	 * @return {array}
 	 */
 	getAll: function(req, res) {
-
 		var isSuperadmin = false; //@TODO: add superadmin
 		var tokenID = req.decoded._id;
 
-
-
 		var query = {};
+
+
 		// If is not superadmin get only user from token _id
-		if (!isSuperadmin) {
+		if (!isSuperadmin && tokenID) {
 			query = {
 				_id: tokenID
 			};
 		}
-
 
 		UserModel
 			.find(query)
@@ -43,7 +41,7 @@ var usersApi = {
 					data: users
 				};
 
-				res.json(_result);
+				res.send(_result);
 
 			}
 		);

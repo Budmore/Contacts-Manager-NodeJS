@@ -31,7 +31,7 @@ describe('Module Auth: auth-service', function() {
 	beforeEach('Create some user', function(done){
 
 		request
-			.post(baseUrl + '/users/register')
+			.post(baseUrl + '/auth/register')
 			.send(_mockedUser)
 			.end(function(err, res) {
 				assert.isUndefined(res.body.password);
@@ -66,7 +66,7 @@ describe('Module Auth: auth-service', function() {
 			password: ''
 		};
 		request
-			.post(baseUrl + '/users/login')
+			.post(baseUrl + '/auth/login')
 			.send(_fakeCredential)
 			.end(function(err, res) {
 				assert.equal(res.status, 401);
@@ -84,7 +84,7 @@ describe('Module Auth: auth-service', function() {
 		};
 
 		request
-			.post(baseUrl + '/users/login')
+			.post(baseUrl + '/auth/login')
 			.send(_fakeCredential)
 			.end(function(err, res) {
 				assert.isDefined(err);
@@ -102,7 +102,7 @@ describe('Module Auth: auth-service', function() {
 		};
 
 		request
-			.post(baseUrl + '/users/login')
+			.post(baseUrl + '/auth/login')
 			.send(_fakeCredential)
 			.end(function(err, res) {
 				assert.isNull(err);
@@ -125,7 +125,7 @@ describe('Module Auth: auth-service', function() {
 		};
 
 		request
-			.post(baseUrl + '/users/register')
+			.post(baseUrl + '/auth/register')
 			.send(_data)
 			.end(function(err, res) {
 				assert.equal(res.status, 201);
@@ -145,7 +145,7 @@ describe('Module Auth: auth-service', function() {
 		};
 
 		request
-			.post(baseUrl + '/users/register')
+			.post(baseUrl + '/auth/register')
 			.send(_data)
 			.end(function(err, res) {
 				assert.equal(res.status, 400);
@@ -165,7 +165,7 @@ describe('Module Auth: auth-service', function() {
 		};
 
 		request
-			.post(baseUrl + '/users/register')
+			.post(baseUrl + '/auth/register')
 			.send(_data)
 			.end(function(err, res) {
 				assert.equal(res.status, 400);
@@ -177,7 +177,7 @@ describe('Module Auth: auth-service', function() {
 
 	it('should get user only by token', function(done) {
 		request
-			.post(baseUrl + '/users/me')
+			.get(baseUrl + '/auth/me')
 			.set('x-access-token', globalToken)
 			.end(function(err, res) {
 				assert.equal(res.status, 200);

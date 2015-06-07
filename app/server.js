@@ -78,7 +78,9 @@ var allowCrossDomain = function(req, res, next) {
 var tokenVerify = function(req, res, next) {
 	middleware.tokenVerify(req, res)
 		.then(function() { next(); })
-		.catch(res.json)
+		.catch(function(err) {
+			res.status(err.status).send(err.message);
+		})
 		.done();
 };
 
@@ -117,9 +119,10 @@ router
 	.delete('/users/:id', tokenVerify, usersApi.deleteById) // isSuperadmin || isOwner
 
 	// Auth
-	.post('/users/login', authService.login)
-	.post('/users/register', authService.createUser)
-	.post('/users/me', tokenVerify, authService.getUserByToken);
+	.post('/auth/login', authService.login)
+	.post('/auth/register', authService.createUser)
+	.get('/auth/me', tokenVerify, authService.getUserByToken);
+
 
 //Add url prefix eg.'/api/v1'
 app.use(config.version, router);

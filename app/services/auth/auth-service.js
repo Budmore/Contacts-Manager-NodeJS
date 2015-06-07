@@ -136,7 +136,7 @@ var auth = {
 	 * @return {Object}     User object
 	 */
 	getUserByToken: function(req, res) {
-		var tokenID = req.decoded && req.decoded._id;
+		var tokenID = req.decoded._id;
 
 		if (!tokenID) {
 			res.status(401).send('Unauthorized');

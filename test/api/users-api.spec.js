@@ -31,7 +31,13 @@ describe('User API', function() {
 
 		token = jwt.sign(mockedPayload, config.secret);
 
-		done();
+		var createUser = new UserModel(mockedPayload);
+
+		createUser.save(function() {
+			done();
+		});
+
+
 	});
 
 
