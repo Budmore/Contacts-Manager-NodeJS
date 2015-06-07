@@ -23,14 +23,13 @@ var auth = {
 		var email = req.body.email;
 		var password = req.body.password;
 
-		if (!email || !password) {
+		if (!email || !password || !validator.isEmail(email)) {
 			res.status(401).send({
 				status: 401,
 				message: 'Invalid credentials'
 			});
 			return;
 		}
-
 
 		UserModel
 			.findOne({email: email})

@@ -60,7 +60,24 @@ describe('Module Auth: auth-service', function() {
 
 	});
 
-	it('should check login credential - 1 error (no password)', function(done) {
+
+	it('should check login credential - 1 error (incorrect email)', function(done) {
+		var _fakeCredential = {
+			email: 'incorrect-mail.pl',
+			password: 'some#password'
+		};
+		request
+			.post(baseUrl + '/auth/login')
+			.send(_fakeCredential)
+			.end(function(err, res) {
+				assert.equal(res.status, 401);
+				assert.isUndefined(res.body.token);
+
+				done();
+			});
+	});
+
+	it('should check login credential - 2 error (no password)', function(done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			password: ''
@@ -76,7 +93,7 @@ describe('Module Auth: auth-service', function() {
 			});
 	});
 
-	it('should check login credential - 2 error (incorrect pass)', function(done) {
+	it('should check login credential - 3 error (incorrect pass)', function(done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			// password: _mockedUser.password
@@ -95,7 +112,7 @@ describe('Module Auth: auth-service', function() {
 			});
 	});
 
-	it('should check login credential - 3 success (generateToken)', function(done) {
+	it('should check login credential - 4 success (generateToken)', function(done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			password: _mockedUser.password
