@@ -1,5 +1,4 @@
 'use strict';
-var scrypt    = require('scrypt');
 var validator = require('validator');
 var UserModel = require('../models/user');
 
@@ -17,8 +16,21 @@ var usersApi = {
 	 * @return {array}
 	 */
 	getAll: function(req, res) {
+		var isSuperadmin = false; //@TODO: add superadmin
+		var tokenID = req.decoded._id;
+
+		var query = {};
+
+
+		// If is not superadmin get only user from token _id
+		if (!isSuperadmin && tokenID) {
+			query = {
+				_id: tokenID
+			};
+		}
+
 		UserModel
-			.find({})
+			.find(query)
 			.exec(function(err, users) {
 				if (err) {
 					return res.status(500).send(err);
@@ -29,7 +41,7 @@ var usersApi = {
 					data: users
 				};
 
-				res.json(_result);
+				res.send(_result);
 
 			}
 		);
@@ -37,61 +49,6 @@ var usersApi = {
 	},
 
 
-	/**
-	 * Create new user
-	 *
-	 * Method: POST
-	 * http://budmore.pl/api/v1/users/
-	 *
-	 * @param  {object} req Request data
-	 * @param  {object} res Respond data
-	 */
-	create: function(req, res) {
-
-		// Email validate
-		if (!validator.isEmail(req.body.email)) {
-			return res.status(400).send('Please enter a valid email address.');
-		}
-
-		// Password validate
-		if (!req.body.password || req.body.password.length < 6) {
-			return res.status(400).send('The password must be at least 6 characters');
-		}
-
-		var hashedPassword = scrypt.passwordHashSync(req.body.password, 0.01);
-
-
-		var _user = {
-			email: req.body.email,
-			password: hashedPassword,
-			notificationsTypes: {
-				email: true,
-				sms: false
-			},
-			recipients: {
-				emails: [],
-				phones: []
-			}
-		};
-
-
-		var createUser = new UserModel(_user);
-
-		createUser.save(function(err, user) {
-
-			if (err) {
-				// @todo diffrent status for diffrent type of error.
-				return res.status(500).send(err);
-			}
-
-			if (user) {
-				var userCopy = JSON.parse(JSON.stringify(user));
-				delete userCopy.password;
-				res.status(201).send(userCopy);
-			}
-
-		});
-	},
 
 	/**
 	 * Find user by id.
@@ -104,9 +61,18 @@ var usersApi = {
 	 * @return {object}
 	 */
 	getById: function(req, res) {
-		var _id = req.params && req.params.id;
+		var isSuperadmin = false; // @todo check is Superadmin
+		var _id = req.params.id;
+		var tokenID = req.decoded._id;
 
-		UserModel.findById(_id, function(err, user) {
+
+		if (_id !== tokenID) {
+			if (!isSuperadmin) {
+				return res.status(403).send('Forbiden');
+			}
+		}
+
+		UserModel.findById(tokenID, function(err, user) {
 			if (err) {
 				return res.status(404).send(err);
 			}
@@ -126,43 +92,60 @@ var usersApi = {
 	 * @return {object}
 	 */
 	updateById: function(req, res) {
+		var notificationsTypes = req.body.notificationsTypes || {};
+		var recipients = req.body.recipients || {};
+
+
+		var isSuperadmin = false; // @todo check is Superadmin
+		var _id = req.params.id;
+		var tokenID = req.decoded._id;
+
+
+		// Check is owner or superadmin
+		if (_id !== tokenID) {
+			if (!isSuperadmin) {
+				return res.status(403).send('Forbiden');
+			}
+		}
+
+
 		// Validate user root email
 		var reqEmail = req.body.email;
 		if (!reqEmail || !validator.isEmail(reqEmail)) {
 			return res.status(400).send();
 		}
 
-
-		var updatedContact = {
-			notificationsTypes: {},
-			recipients: {}
-		};
-
-		var _id = req.params && req.params.id;
-		var recipients = req.body.recipients;
-
-		updatedContact.email = reqEmail;
-		updatedContact.phone = req.body.phone || null;
-		updatedContact.image = req.body.image || null;
-		updatedContact.notificationsTypes = req.body.notificationsTypes;
-		updatedContact.recipients.phones = recipients.phones;
-
-
-		// Validate emails
+		// Validate recipients emails
 		if (recipients && recipients.emails) {
 			var parsedArray = recipients.emails.filter(function(email) {
 				if (validator.isEmail(email)) {
 					return true;
 				}
 			});
-			updatedContact.recipients.emails = parsedArray;
+			recipients.emails = parsedArray;
 		}
 
 
+
+		var updatedContact = {
+			email: reqEmail,
+			phone: req.body.phone || null,
+			image: req.body.image || null,
+			notificationsTypes: {
+				email: notificationsTypes.email,
+				sms: notificationsTypes.sms
+			},
+			recipients: {
+				emails: recipients.emails,
+				phones: recipients.phones,
+			}
+		};
+
+
 		// Update model
-		UserModel.findByIdAndUpdate(_id, {$set: updatedContact}, function(err, user) {
+		UserModel.findByIdAndUpdate(tokenID, {$set: updatedContact}, function(err, user) {
 			if (err) {
-				return res.status(404).send(err);
+				return res.status(400).send(err);
 			}
 
 
@@ -186,9 +169,20 @@ var usersApi = {
 	 */
 	deleteById: function(req, res) {
 
-		var _id = req.params && req.params.id;
+		var isSuperadmin = false; // @todo check is Superadmin
+		var _id = req.params.id;
+		var tokenID = req.decoded._id;
 
-		UserModel.findByIdAndRemove(_id, function(err) {
+
+		// Check is owner or superadmin
+		if (_id !== tokenID) {
+			if (!isSuperadmin) {
+				return res.status(403).send('Forbiden');
+			}
+		}
+
+
+		UserModel.findByIdAndRemove(tokenID, function(err) {
 
 			if (err) {
 				return res.status(404).send(err);

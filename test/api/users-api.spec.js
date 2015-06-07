@@ -2,11 +2,18 @@ var assert  = require('chai').assert;
 var request = require('superagent');
 var server  = require('../../app/server');
 var config  = require('../../config');
+var jwt     = require('jsonwebtoken');
 
 var port      = config.port;
 var version   = config.version;
 var baseUrl   = 'http://localhost:' + port + version;
 var UserModel = require('../../app/models/user');
+
+var token;
+var mockedPayload = {
+	_id: '55166e70fb1e9a18818ad8fd',
+	email: 'jakub@gmail.com'
+};
 
 describe('User API', function() {
 	'use strict';
@@ -19,15 +26,30 @@ describe('User API', function() {
 		server.stop(done);
 	});
 
-	it('should get all contacts', function(done) {
 
+	before('create mocked token', function(done) {
+
+		token = jwt.sign(mockedPayload, config.secret);
+
+		var createUser = new UserModel(mockedPayload);
+
+		createUser.save(function() {
+			done();
+		});
+
+
+	});
+
+
+	it('should get all contacts - 1 (is not superadmin)', function(done) {
 
 		request
 			.get(baseUrl + '/users')
+			.set('x-access-token', token)
 			.end(function(err, res) {
 				assert.isNull(err);
-				assert.isObject(res.body);
 				assert.equal(res.status, 200);
+
 				assert.isArray(res.body.data);
 
 				done();
@@ -36,29 +58,10 @@ describe('User API', function() {
 	});
 
 
-	it('should create new user', function(done) {
-
-		var _data = {
-			email: 'jakubo@2.pl',
-			password: '[secret]'
-		};
-		request
-			.post(baseUrl + '/users/register')
-			.send(_data)
-			.end(function(err, res) {
-				assert.isNull(err);
-				assert.isUndefined(res.body.password);
-				assert.equal(res.status, 201);
-
-				done();
-			});
-
-	});
-
 	describe('with id', function() {
 		var mockedUser = {
-			_id: '55166e70fb1e9a18818ad8fd',
-			email: 'jakub@o2.pl',
+			_id: mockedPayload._id,
+			email: mockedPayload.email,
 			password: '[secret]'
 		};
 
@@ -76,28 +79,43 @@ describe('User API', function() {
 		});
 
 
-		it('should get user by id', function(done) {
+		it('should get user by id - 1', function(done) {
 
 			request
 				.get(baseUrl + '/users/' + mockedUser._id)
+				.set('x-access-token', token)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.isObject(res);
+					assert.equal(res.status, 200);
 
 					assert.equal(res.body._id, mockedUser._id);
-					assert.equal(res.body.email, mockedUser.email);
 					assert.isUndefined(res.body.password);
-					assert.equal(res.status, 200);
+
 					done();
 				});
 
 		});
 
 
-		it('should get 404 if contact does not exists', function(done) {
+		it('should get user by id - 2 (is not superadmin)', function(done) {
 
 			request
+				.get(baseUrl + '/users/otherid' )
+				.set('x-access-token', token)
+				.end(function(err, res) {
+					assert.equal(res.status, 403);
+					done();
+				});
+
+		});
+
+		it.skip('should get user by id - 3 (is superadmin)', function(done) {
+
+			//@TODO: create superadmin
+			request
 				.get(baseUrl + '/users/fake-id')
+				.set('x-access-token', token)
 				.end(function(err, res) {
 					assert.isObject(err);
 					assert.isObject(res);
@@ -109,9 +127,9 @@ describe('User API', function() {
 		});
 
 
-		it('should update existing contact', function(done) {
+		it('should update existing contact - 1', function(done) {
 			var updatedContact = {
-				_id: '55166e70fb1e9a18818ad8fd',
+				_id: mockedPayload._id,
 				email: 'test@aa.com',
 				notificationsTypes: {
 					email: true,
@@ -125,6 +143,7 @@ describe('User API', function() {
 
 			request
 				.put(baseUrl + '/users/' + updatedContact._id)
+				.set('x-access-token', token)
 				.send(updatedContact)
 				.end(function(err, res) {
 					assert.isNull(err);
@@ -141,8 +160,25 @@ describe('User API', function() {
 				});
 		});
 
+		it('should update existing contact - 2 (is not superadmin) ', function(done) {
+			var updatedContact = {
+				_id: 'some-other-id',
+				email: 'test@aa.com'
+			};
 
-		it('should remove existing contact', function(done) {
+			request
+				.put(baseUrl + '/users/' + updatedContact._id)
+				.set('x-access-token', token)
+				.send(updatedContact)
+				.end(function(err, res) {
+					assert.isObject(err);
+					assert.equal(res.status, 403);
+					done();
+				});
+		});
+
+
+		it('should remove existing contact - 1', function(done) {
 			var countBefore, countAfter;
 
 			// Count documents before
@@ -153,6 +189,7 @@ describe('User API', function() {
 			// Delete Request
 			request
 				.del(baseUrl + '/users/' + mockedUser._id)
+				.set('x-access-token', token)
 				.end(function(err, res) {
 					assert.isNull(err);
 					assert.equal(res.status, 204);
@@ -161,10 +198,22 @@ describe('User API', function() {
 					UserModel.count({}, function(err, count) {
 						countAfter = count;
 
-						assert.equal(countBefore, 1);
-						assert.equal(countAfter, 0);
+						assert.equal(countAfter, countBefore - 1);
 						done();
 					});
+				});
+
+		});
+
+		it('should remove existing contact - 2 (is not superadmin)', function(done) {
+
+			// Delete Request
+			request
+				.del(baseUrl + '/users/' + 'other-id')
+				.set('x-access-token', token)
+				.end(function(err, res) {
+					assert.equal(res.status, 403);
+					done();
 				});
 
 		});

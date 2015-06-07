@@ -14,15 +14,17 @@ var config = require('../../config');
  * @param  {Function} next
  *
  */
-var tokenVerify = function(req, res) {
+var tokenVerify = function(req) {
 	var deferred = Q.defer();
 	var token = req.headers['x-access-token'] || req.body.token || req.query.token;
 
 	if (token) {
 		jwt.verify(token, config.secret, function(err, decoded) {
 			if (err) {
-				res.status(401).send(err);
-				deferred.reject();
+				deferred.reject({
+					status: 401,
+					message: err
+				});
 			} else {
 				req.decoded = decoded;
 				deferred.resolve();
@@ -31,8 +33,10 @@ var tokenVerify = function(req, res) {
 
 
 	} else {
-		res.status(403).send('No token provided.');
-		deferred.reject();
+		deferred.reject({
+			status: 403,
+			message: 'No token provided.'
+		});
 	}
 
 	return deferred.promise;

@@ -20,25 +20,25 @@ beforeEach(function() {
 
 describe('Middlewares "token-verify"', function() {
 
-	it('should no token - 403 rejected', function() {
+	it('should rejected - 2 no token', function() {
 
 
 		return assert.isRejected(middleware.tokenVerify(req, res))
-			.then(function() {
-				assert.equal(res.statusCode, 403);
+			.then(function(respond) {
+				assert.equal(respond.status, 403);
 			});
 
 
 
 	});
 
-	it('should invalid token - 401 rejected', function() {
+	it('should rejected - 2 invalid token', function() {
 		req.headers['x-access-token'] = 'blabla';
 
 
 		return assert.isRejected(middleware.tokenVerify(req, res))
-			.then(function() {
-				assert.equal(res.statusCode, 401);
+			.then(function(respond) {
+				assert.equal(respond.status, 401);
 			});
 
 

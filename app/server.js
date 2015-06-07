@@ -78,7 +78,9 @@ var allowCrossDomain = function(req, res, next) {
 var tokenVerify = function(req, res, next) {
 	middleware.tokenVerify(req, res)
 		.then(function() { next(); })
-		.catch(res.json)
+		.catch(function(err) {
+			res.status(err.status).send(err.message);
+		})
 		.done();
 };
 
@@ -111,14 +113,16 @@ router
 	.delete('/contacts/:id', tokenVerify, contactsApi.deleteById)
 
 	// Users
-	.get('/users', usersApi.getAll) // isSuperadmin
-	.get('/users/:id', usersApi.getById) // isOwner
-	.put('/users/:id', usersApi.updateById) // isOwner
-	.delete('/users/:id', usersApi.deleteById) // isOwner
+	.get('/users', tokenVerify, usersApi.getAll) // isSuperadmin
+	.get('/users/:id', tokenVerify, usersApi.getById) // isSuperadmin || isOwner
+	.put('/users/:id', tokenVerify, usersApi.updateById) // isSuperadmin || isOwner
+	.delete('/users/:id', tokenVerify, usersApi.deleteById) // isSuperadmin || isOwner
 
 	// Auth
-	.post('/users/register', usersApi.create) // @TODO: respond with token
-	.post('/users/login', authService.login); // every
+	.post('/auth/login', authService.login)
+	.post('/auth/register', authService.createUser)
+	.get('/auth/me', tokenVerify, authService.getUserByToken);
+
 
 //Add url prefix eg.'/api/v1'
 app.use(config.version, router);
