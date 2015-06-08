@@ -1,6 +1,6 @@
 var assert  = require('chai').assert;
 var request = require('superagent');
-var server  = require('../../app/server');
+var app     = require('../../app');
 var config  = require('../../config');
 var jwt     = require('jsonwebtoken');
 
@@ -19,11 +19,11 @@ describe('User API', function() {
 	'use strict';
 
 	before(function(done) {
-		server.start(port, done);
+		app.start(port, done);
 	});
 
 	after(function(done) {
-		server.stop(done);
+		app.stop(done);
 	});
 
 

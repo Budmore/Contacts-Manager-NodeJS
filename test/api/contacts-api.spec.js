@@ -2,7 +2,7 @@ var assert  = require('chai').assert;
 var request = require('superagent');
 var jwt     = require('jsonwebtoken');
 
-var server  = require('../../app/server');
+var app     = require('../../app');
 var config  = require('../../config');
 var port    = config.port;
 var version = config.version;
@@ -20,11 +20,11 @@ describe('Contacts API', function() {
 	'use strict';
 
 	before(function(done) {
-		server.start(port, done);
+		app.start(port, done);
 	});
 
 	after(function(done) {
-		server.stop(done);
+		app.stop(done);
 	});
 
 	before('create mocked token', function(done) {

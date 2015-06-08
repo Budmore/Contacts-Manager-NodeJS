@@ -5,8 +5,8 @@ var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var NodeCron   = require('cron').CronJob;
 
-var config     = require('../config');
-var cronJobs   = require('../app/services/cron-jobs');
+var config     = require('./config');
+var cronJobs   = require('./app/services/cron-jobs');
 
 
 
@@ -23,9 +23,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 if (!process.env.SPEC) {
 	process.env[config.environment] = true; // Environment
-	mongoose.connect(config.db.spec);
+	mongoose.connect(config.db[config.environment]);
 } else {
-	mongoose.connect(config.db[config.environment.toLowerCase()]);
+	mongoose.connect(config.db.spec);
 }
 
 
@@ -65,7 +65,7 @@ new NodeCron({
 
 // MIDDLEWARES
 // -----------------------------------------------------------------------------
-var middleware = require('../app/middlewares/token-verify');
+var middleware = require('./app/middlewares/token-verify');
 
 var allowCrossDomain = function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', config.siteUrl);
@@ -94,9 +94,9 @@ app.use(allowCrossDomain);
 // -----------------------------------------------------------------------------
 
 var router = express.Router();
-var contactsApi = require('./api/contacts-api');
-var usersApi = require('./api/users-api');
-var authService = require('./services/auth/auth-service');
+var contactsApi = require('./app/api/contacts-api');
+var usersApi = require('./app/api/users-api');
+var authService = require('./app/services/auth/auth-service');
 
 
 router.get('/', function(req, res) {

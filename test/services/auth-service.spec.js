@@ -1,5 +1,5 @@
 var config  = require('../../config');
-var server  = require('../../app/server');
+var app     = require('../../app');
 var jwt     = require('jsonwebtoken');
 var request = require('superagent');
 var assert  = require('chai').assert;
@@ -21,11 +21,11 @@ describe('Module Auth: auth-service', function() {
 	};
 
 	before(function(done) {
-		server.start(port, done);
+		app.start(port, done);
 	});
 
 	after(function(done) {
-		server.stop(done);
+		app.stop(done);
 	});
 
 	beforeEach('Create some user', function(done){
