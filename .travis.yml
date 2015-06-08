@@ -2,5 +2,5 @@ language: node_js
 node_js:
   - "0.10"
 
+services: mongodb
 before_script: mv config.example.js config.js
-# script: npm
