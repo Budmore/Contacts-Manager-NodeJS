@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var NodeCron   = require('cron').CronJob;
 
-var config     = require('config');
+var config     = require('./config');
 var cronJobs   = require('./app/services/cron-jobs');
 
 
