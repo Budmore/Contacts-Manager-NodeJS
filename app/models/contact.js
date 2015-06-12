@@ -12,6 +12,7 @@ var ContactSchema = new Schema({
 	phone: String,
 	skype: String,
 	location: String,
+	imageUrl: String,
 	url: String,
 	dates: [{
 		type: {

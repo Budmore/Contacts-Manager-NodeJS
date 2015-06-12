@@ -55,6 +55,7 @@ var contacts = {
 			nickname: req.body.nickname,
 			notes: req.body.notes,
 			email: req.body.email,
+			imageUrl: req.body.imageUrl,
 			url: req.body.url,
 			dates: req.body.dates
 		};
