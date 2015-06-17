@@ -47,6 +47,8 @@ var auth = {
 				if (isExist && isVerified) {
 
 					var result = {
+						_id: user._id,
+						email: user.email,
 						token: generateToken(user)
 					};
 
