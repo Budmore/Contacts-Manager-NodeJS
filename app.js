@@ -113,6 +113,7 @@ router
 	.delete('/contacts/:id', tokenVerify, contactsApi.deleteById)
 
 	// Users
+	.get('/user', tokenVerify, usersApi.getUser) // isOwner
 	.get('/users', tokenVerify, usersApi.getAll) // isSuperadmin
 	.get('/users/:id', tokenVerify, usersApi.getById) // isSuperadmin || isOwner
 	.put('/users/:id', tokenVerify, usersApi.updateById) // isSuperadmin || isOwner

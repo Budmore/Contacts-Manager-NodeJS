@@ -51,6 +51,33 @@ var usersApi = {
 
 
 	/**
+	 * Find user by token only.
+	 *
+	 * Method: GET
+	 * http://budmore.pl/api/v1/users
+	 *
+	 * @param  {object} req Request data
+	 * @param  {object} res Respond data
+	 * @return {object}
+	 */
+	getUser: function(req, res) {
+		var tokenID = req.decoded._id;
+
+		if (!tokenID) {
+			return res.status(400).send('Token is required');
+		}
+
+		UserModel.findOne({_id: tokenID}, function(err, user) {
+
+			if (err) {
+				return res.status(500).send(err);
+			}
+
+			res.send(user);
+		});
+	},
+
+	/**
 	 * Find user by id.
 	 *
 	 * Method: GET
@@ -197,6 +224,7 @@ var usersApi = {
 
 
 module.exports = {
+	getUser: usersApi.getUser,
 	getAll: usersApi.getAll,
 	create: usersApi.create,
 	getById: usersApi.getById,

@@ -58,6 +58,7 @@ describe('User API', function() {
 	});
 
 
+
 	describe('with id', function() {
 		var mockedUser = {
 			_id: mockedPayload._id,
@@ -78,8 +79,45 @@ describe('User API', function() {
 
 		});
 
+		it('should getUser() - 1 (with token)', function(done) {
 
-		it('should get user by id - 1', function(done) {
+			request
+				.get(baseUrl + '/user')
+				.set('x-access-token', token)
+				.end(function(err, res) {
+					assert.isNull(err);
+					assert.equal(res.status, 200);
+					assert.equal(res.body._id, mockedUser._id);
+
+					done();
+				});
+
+		});
+
+		it('should getUser() - 2 (incomplete token)', function(done) {
+			var payload = {
+				email: 'some@email.pl'
+			};
+
+			var incompleteToken = jwt.sign(payload, config.secret);
+
+			request
+				.get(baseUrl + '/user')
+				.set('x-access-token', incompleteToken)
+				.end(function(err, res) {
+					assert.isObject(err);
+					assert.equal(res.status, 400);
+
+					done();
+				});
+
+		});
+
+
+
+
+
+		it('should getById() - 1', function(done) {
 
 			request
 				.get(baseUrl + '/users/' + mockedUser._id)
@@ -98,7 +136,7 @@ describe('User API', function() {
 		});
 
 
-		it('should get user by id - 2 (is not superadmin)', function(done) {
+		it('should getById() - 2 (is not superadmin)', function(done) {
 
 			request
 				.get(baseUrl + '/users/otherid' )
@@ -110,7 +148,7 @@ describe('User API', function() {
 
 		});
 
-		it.skip('should get user by id - 3 (is superadmin)', function(done) {
+		it.skip('should getById() - 3 (is superadmin)', function(done) {
 
 			//@TODO: create superadmin
 			request
@@ -127,7 +165,10 @@ describe('User API', function() {
 		});
 
 
-		it('should update existing contact - 1', function(done) {
+
+
+
+		it('should updateById() - 1', function(done) {
 			var updatedContact = {
 				_id: mockedPayload._id,
 				email: 'test@aa.com',
@@ -160,7 +201,7 @@ describe('User API', function() {
 				});
 		});
 
-		it('should update existing contact - 2 (is not superadmin) ', function(done) {
+		it('should updateById() - 2 (is not superadmin) ', function(done) {
 			var updatedContact = {
 				_id: 'some-other-id',
 				email: 'test@aa.com'
@@ -178,7 +219,10 @@ describe('User API', function() {
 		});
 
 
-		it('should remove existing contact - 1', function(done) {
+
+
+
+		it('should deleteById() - 1', function(done) {
 			var countBefore, countAfter;
 
 			// Count documents before
@@ -205,7 +249,7 @@ describe('User API', function() {
 
 		});
 
-		it('should remove existing contact - 2 (is not superadmin)', function(done) {
+		it('should deleteById() - 2 (is not superadmin)', function(done) {
 
 			// Delete Request
 			request
