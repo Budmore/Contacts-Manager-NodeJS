@@ -45,6 +45,7 @@
     "superagent": "~1.1.0",
     "node-mocks-http": "~1.4.3",
     "chai-as-promised": "~5.0.0",
-    "sinon": "~1.15.3"
+    "sinon": "~1.15.3",
+    "rewire": "~2.3.4"
   }
 }

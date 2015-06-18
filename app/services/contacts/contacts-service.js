@@ -8,14 +8,18 @@
 var service = {
 
 	/**
+	 * !deprected - use findContactsByDateRange
 	 * Find contacts by date
 	 *
 	 * @param  {date} date
+	 * @param  {string} _userid
+	 *
 	 * @return {array} Contacts with matching date
 	 */
-	findContactsByDate: function(date) {
+	findContactsByDate: function(_userid, date) {
 
 		var _search = {
+			_userid: _userid,
 			dates: {
 				$elemMatch: {
 					day: date.getDate(),
@@ -54,6 +58,58 @@ var service = {
 	},
 
 	/**
+	 * Find contacts of all by date range
+	 *
+	 * @param  {Object} startDate
+	 * @param  {Object} endDate
+	 *
+	 * @return {array} Contacts with matching dates
+	 */
+	findContactsByDateRange: function(startDate, endDate) {
+
+		var _search = {
+			dates: {
+				$elemMatch: {
+					day:{
+						$gte: startDate.getDate(),
+						$lte: endDate.getDate()
+					},
+					month:{
+						$gte: startDate.getMonth(),
+						$lte: endDate.getMonth()
+					}
+
+				}
+			}
+		};
+
+		var result = new Promise(function(resolve, reject) {
+
+			ContactModel
+				.find(_search)
+				.exec(function(err, contacts) {
+					if (err) {
+						reject(err);
+					}
+
+
+					resolve(contacts);
+				});
+
+
+		});
+
+		return result;
+
+	},
+
+
+
+
+
+
+
+	/**
 	 * Set property year, month, day from each date in dates.
 	 *
 	 * @param  {Array} dates each object has property "date" with iso Date
@@ -86,5 +142,6 @@ var service = {
 
 module.exports = {
 	findContactsByDate: service.findContactsByDate,
+	findContactsByDateRange: service.findContactsByDateRange,
 	parseDates: service.parseDates
 };

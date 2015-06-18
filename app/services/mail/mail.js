@@ -40,6 +40,7 @@ mail = {
 		var mailOptions = {
 			from: headers.from || config.mailer.defaultFromAddress,
 			to: headers.to,
+			bcc: headers.bcc,
 			subject: headers.subject,
 			text: message.text, // plaintext body
 			html: message.html // html body
