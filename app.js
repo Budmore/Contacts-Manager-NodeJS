@@ -51,7 +51,7 @@ if (!process.env.SPEC) {
 // CRON JOBS
 // -----------------------------------------------------------------------------
 new NodeCron({
-	cronTime: '00 00 06 * * *', // Runs every day at 6:00 AM - crontab.org
+	cronTime: '00 00 03 * * mon', // Runs on every Monday at 3:00 AM - crontab.org
 	onTick: function() {
 		console.log('Cron job: tick');
 		cronJobs.checkAndSend();
