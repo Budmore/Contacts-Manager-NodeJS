@@ -34,7 +34,7 @@ var cronJobs = {
 			endDate.setDate(endDate.getDate() + 7); // next week
 		}
 
-		return contactsService.findContactsByDateRange(startDate, endDate);
+		return contactsService.findAllContactsByDateRange(startDate, endDate);
 
 	},
 
@@ -82,7 +82,6 @@ var cronJobs = {
 	 * @return {Object} Promise
 	 */
 	getUsers: function(result) {
-
 		var promise = new Promise(function(resolve) {
 
 
@@ -127,8 +126,8 @@ var cronJobs = {
 			if (user.notificationsTypes && user.notificationsTypes.email) {
 
 				var headers = {
-					to: 'j.mach@budmore.pl',
-					bbc: user.recipients.emails,
+					to: user.email,
+					bcc: user.recipients && user.recipients.emails,
 					subject: 'Pamiętaj o życzeniach'
 				};
 
@@ -146,9 +145,7 @@ var cronJobs = {
 						html: data.html
 					};
 
-					mail.sendOne(headers, message).then(function() {
-						console.log('The message was successfully sent');
-					});
+					mail.sendOne(headers, message);
 
 				});
 

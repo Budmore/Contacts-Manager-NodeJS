@@ -120,11 +120,11 @@ describe('Service: contacts', function() {
 		done();
 	});
 
-	it('should findContactsByDateRange()', function(done) {
+	it('should findAllContactsByDateRange()', function(done) {
 		var startDate = new Date(2015, 3, 11);
 		var endDate = new Date(2015, 3, 16);
 
-		contactsService.findContactsByDateRange(startDate, endDate)
+		contactsService.findAllContactsByDateRange(startDate, endDate)
 			.then(function(data) {
 				assert.equal(data.length, 3); //mocdkedContact + mockedContact2 + mocdkedContact3
 				done();

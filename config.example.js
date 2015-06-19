@@ -9,6 +9,9 @@ var config = {
 		development: 'mongodb://localhost/contacts-manager-v1-dev',
 		spec: 'mongodb://localhost/contacts-manager-v1-specs'
 	},
+	emails: {
+		contact: 'contact@budmore.pl'
+	},
 	mailer: {
 		auth: {
 			user: 'no-reply@gmail.com',

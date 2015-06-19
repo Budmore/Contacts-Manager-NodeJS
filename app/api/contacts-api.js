@@ -126,6 +126,10 @@ var contacts = {
 		delete updatedContact._userid;
 
 
+		if (updatedContact.dates && updatedContact.dates.length) {
+			contactsService.parseDates(updatedContact.dates);
+		}
+
 		ContactModel.findOneAndUpdate(query, {$set: updatedContact}, function(err, doc) {
 			if (err) {
 				return res.status(404).send(err);

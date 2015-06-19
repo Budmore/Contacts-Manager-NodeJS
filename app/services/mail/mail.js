@@ -53,6 +53,16 @@ mail = {
 					return reject(error);
 				}
 
+				var msg = 'The message was successfully sent TO: ' + headers.to;
+
+				if (headers.bcc) {
+					msg += ' BCC: ' + headers.bcc;
+				}
+
+				if (!process.env.SPEC) {
+					console.log(msg);
+				}
+
 				resolve(info.response);
 
 			});
@@ -71,6 +81,7 @@ mail = {
 
 		var	templateData = options.data;
 		templateData.siteUrl = config.siteUrl;
+		templateData.contactMail = config.emails && config.emails.contact;
 
 		_.templateSettings.variable = 'data';
 

@@ -8,7 +8,7 @@
 var service = {
 
 	/**
-	 * !deprected - use findContactsByDateRange
+	 * !deprected - use findAllContactsByDateRange
 	 * Find contacts by date
 	 *
 	 * @param  {date} date
@@ -65,7 +65,7 @@ var service = {
 	 *
 	 * @return {array} Contacts with matching dates
 	 */
-	findContactsByDateRange: function(startDate, endDate) {
+	findAllContactsByDateRange: function(startDate, endDate) {
 
 		var _search = {
 			dates: {
@@ -142,6 +142,6 @@ var service = {
 
 module.exports = {
 	findContactsByDate: service.findContactsByDate,
-	findContactsByDateRange: service.findContactsByDateRange,
+	findAllContactsByDateRange: service.findAllContactsByDateRange,
 	parseDates: service.parseDates
 };
