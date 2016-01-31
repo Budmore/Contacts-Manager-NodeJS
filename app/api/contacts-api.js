@@ -130,8 +130,8 @@ var contacts = {
 			contactsService.parseDates(updatedContact.dates);
 		}
 
-		ContactModel.findOneAndUpdate(query, {$set: updatedContact}, function(err, doc) {
-			if (err) {
+		ContactModel.findOneAndUpdate(query, {$set: updatedContact}, {new: true },
+			function(err, doc) {if (err) {
 				return res.status(404).send(err);
 			}
 

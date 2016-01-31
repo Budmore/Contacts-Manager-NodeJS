@@ -55,11 +55,9 @@ describe('Service: contacts', function() {
 
 	beforeEach('Create model with id (to test on it)',function(done) {
 
-		var createContact = new ContactModel();
-
 		var newContacts = [mockedContact, mockedContact2, mockedContact3];
 
-		createContact.collection.insert(newContacts, function(err, contacts) {
+		ContactModel.create(newContacts, function(err, contacts) {
 			assert.isNull(err);
 			assert.ok(contacts);
 			assert.isArray(contacts);

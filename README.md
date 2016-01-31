@@ -42,7 +42,7 @@ npm start
 
 Run `npm install` for building and `npm start` for preview.
 
-Create config.js (follow by the config.example.js) 
+Create config.js (follow by the config.example.js)
 Do not commit your config.js file to any repo!
 
 
@@ -50,8 +50,8 @@ Do not commit your config.js file to any repo!
 ## Testing
 ```
 npm test
-npm run-script test-tdd
+npm run tdd
 
 ```
 
-Running `npm test` or `npm run-script test-tdd` will run the unit tests with Mocha and Chai.
+Running `npm test` or `npm run tdd` will run the unit tests with Mocha and Chai.

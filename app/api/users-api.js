@@ -170,18 +170,20 @@ var usersApi = {
 
 
 		// Update model
-		UserModel.findByIdAndUpdate(tokenID, {$set: updatedContact}, function(err, user) {
-			if (err) {
-				return res.status(400).send(err);
+		UserModel.findByIdAndUpdate(tokenID, {$set: updatedContact}, {new: true},
+			function(err, user) {
+				if (err) {
+					return res.status(400).send(err);
+				}
+
+
+				var copyUser = JSON.parse(JSON.stringify(user));
+				delete copyUser.password;
+
+				res.send(copyUser);
+
 			}
-
-
-			var copyUser = JSON.parse(JSON.stringify(user));
-			delete copyUser.password;
-
-			res.send(copyUser);
-
-		});
+		);
 	},
 
 	/**

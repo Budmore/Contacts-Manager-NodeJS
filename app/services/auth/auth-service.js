@@ -4,10 +4,10 @@
 var jwt       = require('jsonwebtoken');
 var scrypt    = require('scrypt');
 var validator = require('validator');
-
 var config    = require('../../../config');
 var UserModel = require('../../models/user');
 
+var scryptParameters = scrypt.paramsSync(0.1);
 
 var auth = {
 
@@ -40,8 +40,9 @@ var auth = {
 				// Validate password
 				if (user && user.password) {
 					isExist = true;
-					isVerified = scrypt.verifyHashSync(user.password, password);
+					isVerified = scrypt.verifyKdfSync(user.password, password);
 				}
+
 
 				// Success - generate and return token
 				if (isExist && isVerified) {
@@ -91,8 +92,7 @@ var auth = {
 			return res.status(400).send('The password must be at least 6 characters');
 		}
 
-		var hashedPassword = scrypt.passwordHashSync(req.body.password, 0.01);
-
+		var hashedPassword = scrypt.kdfSync(req.body.password, scryptParameters);
 
 		var _user = {
 			email: req.body.email,
@@ -172,7 +172,7 @@ function generateToken(user) {
 		email: user.email
 	};
 	var options = {
-		expiresInMinutes: 60 * 24 * 7 // 7days
+		expiresIn: 60 * 59 * 24 * 7 // 7days
 	};
 
 	var token = jwt.sign(payload, config.secret, options);

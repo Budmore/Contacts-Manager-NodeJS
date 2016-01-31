@@ -105,7 +105,7 @@ describe('User API', function() {
 				.get(baseUrl + '/user')
 				.set('x-access-token', incompleteToken)
 				.end(function(err, res) {
-					assert.isObject(err);
+					assert.isDefined(err);
 					assert.equal(res.status, 400);
 
 					done();
@@ -155,7 +155,7 @@ describe('User API', function() {
 				.get(baseUrl + '/users/fake-id')
 				.set('x-access-token', token)
 				.end(function(err, res) {
-					assert.isObject(err);
+					assert.isDefined(err);
 					assert.isObject(res);
 					assert.equal(res.status, 404);
 
@@ -212,7 +212,7 @@ describe('User API', function() {
 				.set('x-access-token', token)
 				.send(updatedContact)
 				.end(function(err, res) {
-					assert.isObject(err);
+					assert.isDefined(err);
 					assert.equal(res.status, 403);
 					done();
 				});
