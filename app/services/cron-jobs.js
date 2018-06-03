@@ -6,7 +6,6 @@ var mail            = require('../../app/services/mail/mail');
 var contactsService = require('../../app/services/contacts/contacts-service');
 
 var cronJobs = {
-
 	checkAndSend: function() {
 		cronJobs.getContacts()
 		.then(cronJobs.sortContactsByUser)
@@ -35,7 +34,6 @@ var cronJobs = {
 		}
 
 		return contactsService.findAllContactsByDateRange(startDate, endDate);
-
 	},
 
 	/**
@@ -50,10 +48,8 @@ var cronJobs = {
 			contacts: {}
 		};
 
-		var promise = new Promise(function(resolve) {
-
+		return new Promise(function(resolve) {
 			contacts.map(function(contact) {
-
 				if (!contact._userid) {
 					return;
 				}
@@ -64,15 +60,10 @@ var cronJobs = {
 				}
 
 				result.contacts[contact._userid].push(contact);
-
 			});
 
 			resolve(result);
-
 		});
-
-
-		return promise;
 	},
 
 	/**
@@ -82,9 +73,7 @@ var cronJobs = {
 	 * @return {Object} Promise
 	 */
 	getUsers: function(result) {
-		var promise = new Promise(function(resolve) {
-
-
+		return new Promise(function(resolve) {
 			var query = {
 				_id: {
 					$in: result._userids
@@ -92,19 +81,10 @@ var cronJobs = {
 			};
 
 			UserModel.find(query).exec(function(err, users) {
-
 				result.users = users;
 				resolve(result);
-
 			});
-
-
-
-
 		});
-
-		return promise;
-
 	},
 
 	/**
@@ -116,15 +96,12 @@ var cronJobs = {
 	 * result.contacts = Object with (key, value). Key is _userid and value is a contacts list
 	 */
 	sendNotifications: function(result) {
-
 		if (!result || !result.users || !result.contacts) {
 			throw new Error('sendNotifications: Missing data');
 		}
 
 		result.users.map(function(user) {
-
 			if (user.notificationsTypes && user.notificationsTypes.email) {
-
 				var headers = {
 					to: user.email,
 					bcc: user.recipients && user.recipients.emails,
@@ -139,24 +116,17 @@ var cronJobs = {
 				};
 
 				mail.generateTemplate(options).then(function(data) {
-
 					var message = {
 						text: data.text,
 						html: data.html
 					};
 
-					mail.sendOne(headers, message);
-
+					return mail.sendOne(headers, message);
+				}).catch(function(error) {
+					console.error('mail.sendOne', error);
 				});
-
-
-
-
 			}
-
-
 		});
-
 	}
 };
 

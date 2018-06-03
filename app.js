@@ -20,7 +20,6 @@ var port = process.env.PORT || config.port;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 if (!process.env.SPEC) {
 	process.env[config.environment] = true; // Environment
 	mongoose.connect(config.db[config.environment]);
@@ -51,7 +50,7 @@ if (!process.env.SPEC) {
 // CRON JOBS
 // -----------------------------------------------------------------------------
 new NodeCron({
-	cronTime: '00 00 03 * * mon', // Runs on every Monday at 3:00 AM - crontab.org
+	cronTime: '0 3 * * *', // Runs on every day at 3:00 AM - crontab.org
 	onTick: function() {
 		console.log('Cron job: tick');
 		cronJobs.checkAndSend();
