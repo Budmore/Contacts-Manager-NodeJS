@@ -14,6 +14,30 @@ var _ = require('lodash'),
 
 
 mail = {
+	/**
+	 * Verify connection configuration
+	 * @returns {object} promise
+	 */
+	smtpVerifyConfig: function() {
+		var transporter = nodemailer.createTransport(smtpTransport({
+			host: config.mailer.host,
+			port: config.mailer.port,
+			auth: {
+				user: config.mailer.auth.user,
+				pass: config.mailer.auth.pass
+			}
+		}));
+
+		return new Promise(function (resolve, reject) {
+			transporter.verify(function (error) {
+				if (error) {
+					reject(error);
+				} else {
+					resolve('Server is ready to take our messages');
+				}
+			});
+		});
+	},
 
 	/**
 	 * Send email
@@ -32,44 +56,33 @@ mail = {
 			}
 		}));
 
+		// @TODO remove test specifc code
 		if (process.env.SPEC) {
-		 	//stubTransport Nodemailer STUB transport (for unit tests)
+			//stubTransport Nodemailer STUB transport (for unit tests)
 			transport = nodemailer.createTransport(stubTransport());
 		}
 
+		var bcc = [].concat(headers.bcc, config.mailer.defaultFromAddress);
 		var mailOptions = {
 			from: headers.from || config.mailer.defaultFromAddress,
 			to: headers.to,
-			bcc: headers.bcc,
+			bcc: bcc,
 			subject: headers.subject,
-			text: message.text, // plaintext body
-			html: message.html // html body
+			text: message.text,
+			html: message.html
 		};
 
 		return new Promise(function (resolve, reject) {
 			transport.sendMail(mailOptions, function(error, info){
-
-				if(error){
-					return reject(error);
+				if (error){
+					reject(error);
+					return;
 				}
 
-				var msg = 'The message was successfully sent TO: ' + headers.to;
-
-				if (headers.bcc) {
-					msg += ' BCC: ' + headers.bcc;
-				}
-
-				if (!process.env.SPEC) {
-					console.log(msg);
-				}
-
-				resolve(info.response);
-
+				resolve(info);
 			});
 		});
 	},
-
-
 
 	/**
 	 *
@@ -110,6 +123,7 @@ mail = {
 };
 
 module.exports = {
+	smtpVerifyConfig: mail.smtpVerify,
 	sendOne: mail.sendOne,
 	generateTemplate: mail.generateTemplate
 };

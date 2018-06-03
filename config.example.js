@@ -1,5 +1,5 @@
 var config = {
-	environment: 'PRODUCTION', // PRODUCTION, DEVELOPMENT
+	environment: 'production', // production, development
 	siteUrl: 'http://budmore.pl',
 	port: 4000,
 	version: '/api/v1',

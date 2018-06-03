@@ -4,13 +4,8 @@
 var mailer = require('../../app/services/mail/mail');
 var assert = require('chai').assert;
 
-
 describe('Service: mail', function () {
-
-
 	it('should send email', function (done) {
-
-
 		var headers = {
 			to: 'j.mach@budmore.pl',
 			subject: 'Password reset',
@@ -27,20 +22,18 @@ describe('Service: mail', function () {
 	});
 
 	it('should compiled test.html template with JSON data', function(done) {
-
 		var options = {
-				data: {
-					importantValue: 'TDD is awesome!',
-					contacts: [
-						{ firstname: 'Jakub', lastname: 'Mach', birthdate: {year: 1987}},
-						{ firstname: 'Feliks', lastname: 'Mach', birthdate: {year: 1990}}
-					]
-				},
+			data: {
+				importantValue: 'TDD is awesome!',
+				contacts: [
+					{ firstname: 'Jakub', lastname: 'Mach', birthdate: {year: 1987}},
+					{ firstname: 'Feliks', lastname: 'Mach', birthdate: {year: 1990}}
+				]
+			},
 			template: 'test'
 		};
 
 		mailer.generateTemplate(options).then(function(data) {
-
 			assert.include(data.html, options.data.importantValue);
 			assert.include(data.text, options.data.importantValue);
 			assert.include(data.text, options.data.contacts[0].firstname);
@@ -48,12 +41,10 @@ describe('Service: mail', function () {
 
 			done();
 		});
-
 	});
 
 
 	it('should compiled notification.html template with JSON data', function(done) {
-
 		var options = {
 				data: {
 					contacts: [
@@ -65,15 +56,10 @@ describe('Service: mail', function () {
 		};
 
 		mailer.generateTemplate(options).then(function(data) {
-
 			assert.include(data.text, options.data.contacts[0].firstname);
 			assert.include(data.text, options.data.contacts[1].firstname);
 
 			done();
 		});
-
 	});
-
-
-
 });
