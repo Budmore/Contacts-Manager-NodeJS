@@ -1,6 +1,5 @@
 'use strict';
 
-var Promise         = require('bluebird');
 var UserModel       = require('../../app/models/user');
 var mail            = require('../../app/services/mail/mail');
 var contactsService = require('../../app/services/contacts/contacts-service');

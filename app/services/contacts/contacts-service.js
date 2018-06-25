@@ -1,7 +1,6 @@
 'use strict';
 
 	var _        = require('lodash'),
-	Promise      = require('bluebird'),
 	moment       = require('moment'),
 	ContactModel = require('../../../app/models/contact');
 
@@ -28,7 +27,7 @@ var service = {
 			}
 		};
 
-		var result = new Promise(function(resolve, reject) {
+		return new Promise(function(resolve, reject) {
 
 			ContactModel.find(_search, function(err, doc) {
 				if (err) {
@@ -52,9 +51,6 @@ var service = {
 
 
 		});
-
-		return result;
-
 	},
 
 	/**
@@ -78,12 +74,11 @@ var service = {
 						$gte: startDate.getMonth(),
 						$lte: endDate.getMonth()
 					}
-
 				}
 			}
 		};
 
-		var result = new Promise(function(resolve, reject) {
+		return new Promise(function(resolve, reject) {
 
 			ContactModel
 				.find(_search)
@@ -92,21 +87,10 @@ var service = {
 						reject(err);
 					}
 
-
 					resolve(contacts);
 				});
-
-
 		});
-
-		return result;
-
 	},
-
-
-
-
-
 
 
 	/**
@@ -130,9 +114,7 @@ var service = {
 				date.month = _isoDate.getMonth();
 				date.day = _isoDate.getDate();
 			}
-
 		});
-
 
 		return dates;
 	}
