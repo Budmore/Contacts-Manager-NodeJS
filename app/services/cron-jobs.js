@@ -6,15 +6,15 @@ var contactsService = require('../../app/services/contacts/contacts-service');
 
 var cronJobs = {
 	checkAndSend: function() {
-		cronJobs.getContacts()
+		console.log('checkAndSend');
+
+		return cronJobs.getContacts()
 		.then(cronJobs.sortContactsByUser)
 		.then(cronJobs.getUsers)
 		.then(cronJobs.sendNotifications)
 		.catch(function(error) {
 			console.log('checkAndSend error', error);
-		})
-		.done();
-
+		});
 	},
 
 	/**
@@ -25,13 +25,16 @@ var cronJobs = {
 	 * @return {Object} return Promise with contacts in the array
 	 */
 	getContacts: function(startDate, endDate) {
+		console.log('getContacts');
+
 		startDate = startDate || new Date(); // Today
 
 		if (!endDate) {
 			endDate = new Date();
-			endDate.setDate(endDate.getDate() + 7); // next week
+			var days = 7; // Next week
+			endDate.setTime(startDate.getTime() + (days * 24 * 60 * 60 * 1000));
 		}
-
+		// @TODO get userId!!!
 		return contactsService.findAllContactsByDateRange(startDate, endDate);
 	},
 
@@ -46,9 +49,10 @@ var cronJobs = {
 			_userids: [],
 			contacts: {}
 		};
-
+		console.log('contacts', contacts);
 		return new Promise(function(resolve) {
 			contacts.map(function(contact) {
+
 				if (!contact._userid) {
 					return;
 				}
@@ -60,6 +64,7 @@ var cronJobs = {
 
 				result.contacts[contact._userid].push(contact);
 			});
+
 
 			resolve(result);
 		});

@@ -26,6 +26,7 @@ if (!process.env.SPEC) {
 } else {
 	mongoose.connect(config.db.spec);
 }
+console.log('config.environment', config.environment);
 
 
 
@@ -33,9 +34,11 @@ if (!process.env.SPEC) {
 // -----------------------------------------------------------------------------
 var server;
 var start = exports.start = function(port, callback) {
+	console.log('server started');
+
 	server = app.listen(port, callback);
 };
-exports.stop = function(callback) {
+var stop = exports.stop = function(callback) {
 	server.close(callback);
 };
 
@@ -59,7 +62,13 @@ if (!process.env.SPEC) {
 // 		start: true
 // 	});
 // }
-
+exports.cronJob = function() {
+	cronJobs.checkAndSend().then(function() {
+		stop(function (){
+			process.exit();
+		});
+	});
+};
 
 
 // MIDDLEWARES
@@ -79,8 +88,7 @@ var tokenVerify = function(req, res, next) {
 		.then(function() { next(); })
 		.catch(function(err) {
 			res.status(err.status).send(err.message);
-		})
-		.done();
+		});
 };
 
 app.use(allowCrossDomain);

@@ -1,65 +1,70 @@
-var assert          = require('chai').assert;
-var ContactModel    = require('../../app/models/contact');
+'use strict';
+var assert = require('chai').assert;
+var ContactModel = require('../../app/models/contact');
 var contactsService = require('../../app/services/contacts/contacts-service');
 
-describe('Service: contacts', function() {
-	'use strict';
+describe('Service: contacts', function () {
+	var mockedUser = {
+		_id: '5582d41b9612e42e2fc440dd'
+	};
 
 	var mockedContact = {
-		_userid: '5582d41b9612e42e2fc440dd',
+		_userid: mockedUser._id,
 		firstname: 'Jakub',
 		dates: [
 			{
-				type: 'BIRTDATE',
-				date: new Date(1987, 3, 11),
+				type: 'BIRTHDATE',
+				date: new Date(1987, 7, 11),
 				year: 1987,
-				month: 3,
+				month: 7,
 				day: 11
 			},
 			{
 				type: 'CUSTOM',
 				date: new Date(2000, 3, 11),
 				year: 2000,
-				month: 6,
+				month: 3,
 				day: 11
 			}
 		]
 	};
 
 	var mockedContact2 = {
-		_userid: '5582d41b9612e42e2fc440dd',
+		_userid: mockedUser._id,
 		firstname: 'Bobek',
 		dates: [
 			{
-				type: 'BIRTDATE',
-				date: new Date(1987, 3, 16),
+				type: 'BIRTHDATE',
+				date: new Date(1987, 6, 30),
 				year: 1987,
-				month: 3,
-				day: 16
+				month: 6,
+				day: 30
 			}
 		]
 	};
 
-	var mockedContact3 = {
+	var mockedContact4 = {
+		_userid: 'random41b9612e42e2fc440dd',
 		firstname: 'Lolek',
 		dates: [
 			{
-				type: 'BIRTDATE',
-				date: new Date(1987, 3, 12),
+				type: 'BIRTHDATE',
+				date: new Date(1987, 3, 27),
 				year: 1987,
 				month: 3,
-				day: 12
+				day: 27
 			}
 		]
 	};
 
-	beforeEach('Create model with id (to test on it)',function(done) {
+	beforeEach('Create model with id (to test on it)', function (done) {
 
-		var newContacts = [mockedContact, mockedContact2, mockedContact3];
+		var newContacts = [mockedContact, mockedContact2, mockedContact4];
 
-		ContactModel.create(newContacts, function(err, contacts) {
+		ContactModel.create(newContacts, function (err, contacts) {
 			assert.isNull(err);
 			assert.ok(contacts);
+
 			assert.isArray(contacts);
 			done();
 		});
@@ -67,13 +72,13 @@ describe('Service: contacts', function() {
 	});
 
 
-	it('should findContactsByDate() - check is contacts has some event today', function(done) {
+	it('should findContactsByDate() - check is contacts has some event today', function (done) {
 
 		var _userid = mockedContact._userid;
-		var someDay = new Date(2015, 3, 11);
+		var someDay = mockedContact.dates[0].date;
 
-		contactsService.findContactsByDate(_userid, someDay).then(function(data) {
-			var datesLength = data[0].dates.length;
+		contactsService.findContactsByDate(_userid, someDay).then(function (contacts) {
+			var datesLength = contacts[0].dates.length;
 			var mockedDatesLength = mockedContact.dates.length;
 
 			assert.equal(datesLength, mockedDatesLength - 1);
@@ -82,7 +87,7 @@ describe('Service: contacts', function() {
 
 	});
 
-	it('should parseDates() - set property year, month, day from each date in dates.', function(done) {
+	it('should parseDates() - set property year, month, day from each date in dates.', function (done) {
 
 		var someDate = new Date();
 
@@ -118,13 +123,15 @@ describe('Service: contacts', function() {
 		done();
 	});
 
-	it('should findAllContactsByDateRange()', function(done) {
-		var startDate = new Date(2015, 3, 11);
-		var endDate = new Date(2015, 3, 16);
+	it('should findAllContactsByDateRange()', function (done) {
+		var startDate = new Date('2018-06-25');
+		var endDate = new Date('2018-08-11');
+		var userId = mockedUser._id;
 
-		contactsService.findAllContactsByDateRange(startDate, endDate)
-			.then(function(data) {
-				assert.equal(data.length, 3); //mocdkedContact + mockedContact2 + mocdkedContact3
+
+		contactsService.findAllContactsByDateRange(userId, startDate, endDate)
+			.then(function (data) {
+				assert.equal(data.length, 2);
 				done();
 			});
 

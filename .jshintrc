@@ -24,8 +24,6 @@
     "before": true,
     "after": true,
     "it": true,
-    "fit": true,
-    "moment": true
-
+    "fit": true
   }
 }

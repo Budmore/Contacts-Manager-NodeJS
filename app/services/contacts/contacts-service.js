@@ -1,8 +1,8 @@
 'use strict';
 
-	var _        = require('lodash'),
-	moment       = require('moment'),
-	ContactModel = require('../../../app/models/contact');
+var _ = require('lodash');
+var dateFns = require('date-fns');
+var ContactModel = require('../../../app/models/contact');
 
 var service = {
 
@@ -15,8 +15,7 @@ var service = {
 	 *
 	 * @return {array} Contacts with matching date
 	 */
-	findContactsByDate: function(_userid, date) {
-
+	findContactsByDate: function (_userid, date) {
 		var _search = {
 			_userid: _userid,
 			dates: {
@@ -27,29 +26,24 @@ var service = {
 			}
 		};
 
-		return new Promise(function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
+			ContactModel.find(_search, function (err, contacts) {
 
-			ContactModel.find(_search, function(err, doc) {
 				if (err) {
 					reject(err);
 				}
 
-				_.each(doc, function(contact) {
-
+				_.each(contacts, function (contact) {
 					var filtered = _.filter(contact.dates, {
 						day: date.getDate(),
 						month: date.getMonth()
 					});
 
 					contact.dates = filtered;
-
 				});
 
-				resolve(doc);
-
+				resolve(contacts);
 			});
-
-
 		});
 	},
 
@@ -61,35 +55,17 @@ var service = {
 	 *
 	 * @return {array} Contacts with matching dates
 	 */
-	findAllContactsByDateRange: function(startDate, endDate) {
+	findAllContactsByDateRange: function (_userid, startDate, endDate) {
+		const promises = [];
+		let loopDate = startDate;
+		while (loopDate <= endDate) {
+			let singleDayPromise = service.findContactsByDate(_userid, loopDate);
+			promises.push(singleDayPromise);
+			loopDate = dateFns.addDays(loopDate, 1);
+		}
 
-		var _search = {
-			dates: {
-				$elemMatch: {
-					day:{
-						$gte: startDate.getDate(),
-						$lte: endDate.getDate()
-					},
-					month:{
-						$gte: startDate.getMonth(),
-						$lte: endDate.getMonth()
-					}
-				}
-			}
-		};
 
-		return new Promise(function(resolve, reject) {
-
-			ContactModel
-				.find(_search)
-				.exec(function(err, contacts) {
-					if (err) {
-						reject(err);
-					}
-
-					resolve(contacts);
-				});
-		});
+		return Promise.all(promises).then(contacts => _.flatten(contacts))
 	},
 
 
@@ -99,20 +75,20 @@ var service = {
 	 * @param  {Array} dates each object has property "date" with iso Date
 	 * @return {Array}
 	 */
-	parseDates: function(dates) {
+	parseDates: function (dates) {
 		if (!dates || dates.constructor !== Array) {
 			return;
 		}
+		dates.forEach(function (date) {
 
-		dates.forEach(function(date) {
-
-			if ( date && moment(date.date).isValid()) {
+			if (date && date.date) {
 				var _isoDate = new Date(date.date);
-
-				date.date = _isoDate;
-				date.year = _isoDate.getFullYear();
-				date.month = _isoDate.getMonth();
-				date.day = _isoDate.getDate();
+				if (dateFns.isValid(_isoDate)) {
+					date.date = _isoDate;
+					date.year = _isoDate.getFullYear();
+					date.month = _isoDate.getMonth();
+					date.day = _isoDate.getDate();
+				}
 			}
 		});
 

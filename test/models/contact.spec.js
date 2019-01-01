@@ -2,10 +2,10 @@ var assert = require('chai').assert;
 
 var ContactModel = require('../../app/models/contact');
 
-describe('Models: contact', function() {
+describe('Models: contact', function () {
 	'use strict';
 
-	it('should create new contact', function(done) {
+	it('should create new contact', function (done) {
 		var someDate = new Date();
 
 		var _contact = {
@@ -28,7 +28,7 @@ describe('Models: contact', function() {
 
 		var createContact = new ContactModel(_contact);
 
-		createContact.save(function(err, doc) {
+		createContact.save(function (err, doc) {
 			assert.isNull(err);
 			assert.ok(doc);
 			assert.isObject(doc);
