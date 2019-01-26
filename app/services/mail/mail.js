@@ -9,6 +9,7 @@ var _ = require('lodash'),
 	templatesDir = path.resolve(__dirname, 'templates'),
 	smtpTransport = require('nodemailer-smtp-transport'),
 	stubTransport = require('nodemailer-stub-transport'),
+	logService = require('../log/log-service'),
 	mail;
 
 
@@ -74,6 +75,7 @@ mail = {
 		return new Promise(function (resolve, reject) {
 			transport.sendMail(mailOptions, function(error, info){
 				if (error){
+					logService.error('SenMail error: ' + JSON.stringify(error));
 					reject(error);
 					return;
 				}

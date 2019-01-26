@@ -26,8 +26,6 @@ var cronJobs = {
 	 * @return {Object} return Promise with contacts in the array
 	 */
 	getContacts: function(startDate, endDate) {
-		logService.info('getContacts');
-
 		startDate = startDate || new Date(); // Today
 
 		if (!endDate) {
@@ -128,14 +126,12 @@ var cronJobs = {
 
 					return mail.sendOne(headers, message);
 				}).catch(function(error) {
-					console.error('mail.sendOne: ', JSON.stringify(error));
+					logService.error('sendNotifications error: ', JSON.stringify(error));
 				});
 			}
 		});
 	}
 };
-
-console.log(process.env)
 
 if (!process.env.SPEC) {
 	cronJobs.checkAndSend();
