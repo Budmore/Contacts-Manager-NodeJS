@@ -3,7 +3,7 @@
 var UserModel       = require('../../app/models/user');
 var mail            = require('../../app/services/mail/mail');
 var contactsService = require('../../app/services/contacts/contacts-service');
-var logService      = require('../log/log-service');
+var logService      = require('../../app/services/log/log-service');
 
 var cronJobs = {
 	checkAndSend: function() {
@@ -135,7 +135,11 @@ var cronJobs = {
 	}
 };
 
-cronJobs.checkAndSend();
+console.log(process.env)
+
+if (!process.env.SPEC) {
+	cronJobs.checkAndSend();
+}
 
 module.exports = {
 	checkAndSend: cronJobs.checkAndSend
