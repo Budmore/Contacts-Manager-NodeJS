@@ -4,6 +4,7 @@ var config = {
 	port: 4000,
 	version: '/api/v1',
 	secret: '7D0vqBry%m6eC_Fn9ao%QABryq1w5QusokvuGMKbIf_ %SWHs1UL',
+	logsPathname: 'logs/',
 	db: {
 		production: 'mongodb://user:pass@budmore.pl:1234/contacts-manager-v1-prod',
 		development: 'mongodb://localhost/contacts-manager-v1-dev',

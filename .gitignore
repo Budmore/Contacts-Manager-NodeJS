@@ -2,3 +2,4 @@ node_modules/
 *sublime-*
 config.js
 .DS_Store
+/logs/*.log

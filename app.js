@@ -3,13 +3,11 @@ var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
-// var NodeCron   = require('cron').CronJob;
+var NodeCron   = require('cron').CronJob;
 
 var config     = require('./config');
 var cronJobs   = require('./app/services/cron-jobs');
-
-
-
+var logService = require('./app/services/log/log-service');
 
 
 
@@ -52,23 +50,21 @@ if (!process.env.SPEC) {
 
 // CRON JOBS
 // -----------------------------------------------------------------------------
-// if (!process.env.SPEC) {
-// 	new NodeCron({
-// 		cronTime: '0 3 * * *', // Runs on every day at 3:00 AM - crontab.org
-// 		onTick: function() {
-// 			console.log('Cron job: tick');
-// 			cronJobs.checkAndSend();
-// 		},
-// 		start: true
-// 	});
-// }
-exports.cronJob = function() {
-	cronJobs.checkAndSend().then(function() {
-		stop(function (){
-			process.exit();
-		});
+if (!process.env.SPEC) {
+	logService.info('Log works!');
+	new NodeCron({
+		cronTime: '* * * * *', // Runs on every day at 3:00 AM - crontab.org
+		onTick: function() {
+			console.log('Cron job: tick');
+			// cronJobs.checkAndSend();
+			logService.info('Cron works!');
+		},
+		start: true
 	});
-};
+}
+
+
+
 
 
 // MIDDLEWARES
