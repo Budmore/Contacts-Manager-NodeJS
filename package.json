@@ -4,7 +4,7 @@
   "description": "NodeJS API to create new contact, editing or delete existing.",
   "main": "index.js",
   "engines": {
-    "node": ">= 0.12.7"
+    "node": "10.15.0"
   },
   "scripts": {
     "start": "node_modules/nodemon/bin/nodemon.js app.js",
