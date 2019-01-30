@@ -3,13 +3,8 @@ var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
-// var NodeCron   = require('cron').CronJob;
 
 var config     = require('./config');
-var cronJobs   = require('./app/services/cron-jobs');
-
-
-
 
 
 
@@ -47,28 +42,6 @@ if (!process.env.SPEC) {
 		console.log('working');
 	});
 }
-
-
-
-// CRON JOBS
-// -----------------------------------------------------------------------------
-// if (!process.env.SPEC) {
-// 	new NodeCron({
-// 		cronTime: '0 3 * * *', // Runs on every day at 3:00 AM - crontab.org
-// 		onTick: function() {
-// 			console.log('Cron job: tick');
-// 			cronJobs.checkAndSend();
-// 		},
-// 		start: true
-// 	});
-// }
-exports.cronJob = function() {
-	cronJobs.checkAndSend().then(function() {
-		stop(function (){
-			process.exit();
-		});
-	});
-};
 
 
 // MIDDLEWARES

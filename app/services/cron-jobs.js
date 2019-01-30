@@ -3,17 +3,18 @@
 var UserModel       = require('../../app/models/user');
 var mail            = require('../../app/services/mail/mail');
 var contactsService = require('../../app/services/contacts/contacts-service');
+var logService      = require('../../app/services/log/log-service');
 
 var cronJobs = {
 	checkAndSend: function() {
-		console.log('checkAndSend');
+		logService.info('checkAndSend');
 
 		return cronJobs.getContacts()
 		.then(cronJobs.sortContactsByUser)
 		.then(cronJobs.getUsers)
 		.then(cronJobs.sendNotifications)
 		.catch(function(error) {
-			console.log('checkAndSend error', error);
+			logService.info('checkAndSend error: ' + JSON.stringify(error));
 		});
 	},
 
@@ -29,8 +30,6 @@ var cronJobs = {
 	 * @return {Object} return Promise with contacts in the array
 	 */
 	getContacts: function(startDate, endDate) {
-		console.log('getContacts');
-
 		startDate = startDate || new Date(); // Today
 
 		if (!endDate) {
@@ -53,7 +52,7 @@ var cronJobs = {
 			_userids: [],
 			contacts: {}
 		};
-		console.log('contacts', contacts);
+		logService.info('contacts length: ' + contacts.length);
 		return new Promise(function(resolve) {
 			contacts.map(function(contact) {
 
@@ -131,12 +130,16 @@ var cronJobs = {
 
 					return mail.sendOne(headers, message);
 				}).catch(function(error) {
-					console.error('mail.sendOne', error);
+					logService.error('sendNotifications error: ', JSON.stringify(error));
 				});
 			}
 		});
 	}
 };
+
+if (!process.env.SPEC) {
+	cronJobs.checkAndSend();
+}
 
 module.exports = {
 	checkAndSend: cronJobs.checkAndSend
