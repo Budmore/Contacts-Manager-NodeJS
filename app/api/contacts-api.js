@@ -14,13 +14,13 @@ var contacts = {
 	 * @param  {object} res Respond data
 	 * @return {array}
 	 */
-	getAll: function(req, res) {
+	getAll: function (req, res) {
 
 		var query = {
 			_userid: req.decoded._id
 		};
 
-		ContactModel.find(query, function(err, contacts) {
+		ContactModel.find(query, function (err, contacts) {
 			if (err) {
 				return res.status(500).send(err);
 			}
@@ -32,9 +32,6 @@ var contacts = {
 
 			res.json(_result);
 		});
-
-
-
 	},
 
 	/**
@@ -46,7 +43,7 @@ var contacts = {
 	 * @param  {object} req Request data
 	 * @param  {object} res Respond data
 	 */
-	create: function(req, res) {
+	create: function (req, res) {
 
 		var _contact = {
 			_userid: req.decoded._id,
@@ -66,7 +63,7 @@ var contacts = {
 
 		var createContact = new ContactModel(_contact);
 
-		createContact.save(function(err, doc) {
+		createContact.save(function (err, doc) {
 			if (err) {
 				// @todo diffrent status for diffrent type of error.
 				return res.status(500).send(err);
@@ -87,7 +84,7 @@ var contacts = {
 	 * @param  {object} res Respond data
 	 * @return {object}
 	 */
-	getById: function(req, res) {
+	getById: function (req, res) {
 
 		var query = {
 			_userid: req.decoded._id,
@@ -95,7 +92,7 @@ var contacts = {
 		};
 
 
-		ContactModel.findOne(query, function(err, doc) {
+		ContactModel.findOne(query, function (err, doc) {
 			if (err) {
 				return res.status(404).send(err);
 			}
@@ -114,7 +111,7 @@ var contacts = {
 	 * @param  {object} res Respond data
 	 * @return {object}
 	 */
-	updateById: function(req, res) {
+	updateById: function (req, res) {
 
 		var query = {
 			_userid: req.decoded._id,
@@ -130,14 +127,15 @@ var contacts = {
 			contactsService.parseDates(updatedContact.dates);
 		}
 
-		ContactModel.findOneAndUpdate(query, {$set: updatedContact}, {new: true },
-			function(err, doc) {if (err) {
-				return res.status(404).send(err);
-			}
+		ContactModel.findOneAndUpdate(query, { $set: updatedContact }, { new: true },
+			function (err, doc) {
+				if (err) {
+					return res.status(404).send(err);
+				}
 
-			res.send(doc);
+				res.send(doc);
 
-		});
+			});
 	},
 
 	/**
@@ -150,14 +148,14 @@ var contacts = {
 	 * @param  {object} res Respond data
 	 * @return {object}
 	 */
-	deleteById: function(req, res) {
+	deleteById: function (req, res) {
 
 		var query = {
 			_userid: req.decoded._id,
 			_id: req.params.id
 		};
 
-		ContactModel.findOneAndRemove(query, function(err) {
+		ContactModel.findOneAndRemove(query, function (err) {
 			if (err) {
 				return res.status(404).send(err);
 			}
@@ -165,9 +163,6 @@ var contacts = {
 			res.status(204).send('Resource deleted successfully');
 		});
 	}
-
-
-
 };
 
 

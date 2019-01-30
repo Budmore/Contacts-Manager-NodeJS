@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "464281d0-8d0c-02e8-2460-73c94f9670fa",
+		"name": "Reminder",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.reminder.budmore.pl/v1",
+					"protocol": "http",
+					"host": [
+						"api",
+						"reminder",
+						"budmore",
+						"pl"
+					],
+					"path": [
+						"v1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.reminder.budmore.pl/v1/user",
+					"protocol": "http",
+					"host": [
+						"api",
+						"reminder",
+						"budmore",
+						"pl"
+					],
+					"path": [
+						"v1",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Contacts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.reminder.budmore.pl/v1/contacts",
+					"protocol": "http",
+					"host": [
+						"api",
+						"reminder",
+						"budmore",
+						"pl"
+					],
+					"path": [
+						"v1",
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Contacts by id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.reminder.budmore.pl/v1/contacts/59e3ce3064a5dd592a6396d5",
+					"protocol": "http",
+					"host": [
+						"api",
+						"reminder",
+						"budmore",
+						"pl"
+					],
+					"path": [
+						"v1",
+						"contacts",
+						"59e3ce3064a5dd592a6396d5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Contact by id",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_id\": \"59e3ce3064a5dd592a6396d5\",\n    \"_userid\": \"59e3cd4364a5dd592a6396d4\",\n    \"firstname\": \"Foo\",\n    \"lastname\": \"boo 2\",\n    \"email\": \"testing@o2.pl\",\n    \"__v\": 0,\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://api.reminder.budmore.pl/v1/contacts/59e3ce3064a5dd592a6396d5",
+					"protocol": "http",
+					"host": [
+						"api",
+						"reminder",
+						"budmore",
+						"pl"
+					],
+					"path": [
+						"v1",
+						"contacts",
+						"59e3ce3064a5dd592a6396d5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contact",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://api.reminder.budmore.pl/v1/contacts",
+					"protocol": "http",
+					"host": [
+						"api",
+						"reminder",
+						"budmore",
+						"pl"
+					],
+					"path": [
+						"v1",
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Contact",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://api.reminder.budmore.pl/v1/contacts/59e3cfd864a5dd592a6396da",
+					"protocol": "http",
+					"host": [
+						"api",
+						"reminder",
+						"budmore",
+						"pl"
+					],
+					"path": [
+						"v1",
+						"contacts",
+						"59e3cfd864a5dd592a6396da"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

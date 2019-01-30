@@ -17,6 +17,10 @@ var cronJobs = {
 		});
 	},
 
+	getUsers: function() {
+
+	},
+
 	/**
 	 * Get contacts by date range. if no param then find on upcoming week.
 	 *
