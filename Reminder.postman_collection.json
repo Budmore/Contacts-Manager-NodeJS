@@ -111,7 +111,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+							"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-06-25T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 5,\n            \"day\": 25\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{URL}}/v1/contacts",
@@ -402,18 +402,69 @@
 			]
 		},
 		{
+			"name": "notifications",
+			"item": [
+				{
+					"name": "checkAndSend",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/v1/notifications/check-and-send",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"notifications",
+								"check-and-send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "smtpVerifyConfig",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"type": "text",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/v1/notifications/smtp-verify-config",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"notifications",
+								"smtp-verify-config"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Health check",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://api.reminder.budmore.pl/v1",
-					"protocol": "http",
+					"raw": "{{URL}}/v1",
 					"host": [
-						"api",
-						"reminder",
-						"budmore",
-						"pl"
+						"{{URL}}"
 					],
 					"path": [
 						"v1"

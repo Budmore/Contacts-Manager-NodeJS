@@ -77,6 +77,7 @@ var router = express.Router();
 var contactsApi = require('./app/api/contacts-api');
 var usersApi = require('./app/api/users-api');
 var authService = require('./app/services/auth/auth-service');
+var notificationsApi = require('./app/api/notifications-api');
 
 router.get('/', function (req, res) {
 	res.send('isAlive');
@@ -99,7 +100,10 @@ router
 	// Auth
 	.post('/auth/login', authService.login)
 	.post('/auth/register', authService.createUser)
-	.get('/auth/me', tokenVerify, authService.getUserByToken);
+	.get('/auth/me', tokenVerify, authService.getUserByToken)
+	// Notifications
+	.post('/notifications/check-and-send', notificationsApi.checkAndSend)
+	.post('/notifications/smtp-verify-config', notificationsApi.smtpVerifyConfig);
 
 //Add url prefix eg.'/api/v1'
 app.use(config.version, router);

@@ -18,7 +18,7 @@ mail = {
 	 * Verify connection configuration
 	 * @returns {object} promise
 	 */
-	smtpVerifyConfig: function() {
+	smtpVerifyConfig: function () {
 		var transporter = nodemailer.createTransport(smtpTransport({
 			host: config.mailer.host,
 			port: config.mailer.port,
@@ -44,7 +44,7 @@ mail = {
 	 * @param  {object} headers Data to send
 	 * @param  {object} message Message to send
 	 */
-	sendOne: function(headers, message) {
+	sendOne: function (headers, message) {
 
 		// create reusable transport object using SMTP transport
 		var transport = nodemailer.createTransport(smtpTransport({
@@ -73,8 +73,8 @@ mail = {
 		};
 
 		return new Promise(function (resolve, reject) {
-			transport.sendMail(mailOptions, function(error, info){
-				if (error){
+			transport.sendMail(mailOptions, function (error, info) {
+				if (error) {
 					logService.error('SenMail error: ' + JSON.stringify(error));
 					reject(error);
 					return;
@@ -93,7 +93,7 @@ mail = {
 	 */
 	generateTemplate: function (options) {
 
-		var	templateData = options.data;
+		var templateData = options.data;
 		templateData.siteUrl = config.siteUrl;
 		templateData.contactMail = config.emails && config.emails.contact;
 
@@ -101,7 +101,7 @@ mail = {
 
 		// read the proper email body template
 		return new Promise(function (resolve, reject) {
-			fs.readFile(templatesDir + '/' + options.template + '.html', {encoding: 'utf8'}, function (err, fileContent) {
+			fs.readFile(templatesDir + '/' + options.template + '.html', { encoding: 'utf8' }, function (err, fileContent) {
 				if (err) {
 					reject(err);
 				}
@@ -124,7 +124,7 @@ mail = {
 };
 
 module.exports = {
-	smtpVerifyConfig: mail.smtpVerify,
+	smtpVerifyConfig: mail.smtpVerifyConfig,
 	sendOne: mail.sendOne,
 	generateTemplate: mail.generateTemplate
 };

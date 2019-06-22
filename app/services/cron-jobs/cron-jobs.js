@@ -7,14 +7,12 @@ var logService = require('../log/log-service');
 
 var cronJobs = {
 	checkAndSend: function (startDate) {
-		logService.info('checkAndSend');
-
 		return cronJobs.getContacts(startDate)
 			.then(cronJobs.sortContactsByUser)
 			.then(cronJobs.getUsers)
 			.then(cronJobs.sendNotifications)
 			.catch(function (error) {
-				logService.info('checkAndSend error: ' + JSON.stringify(error));
+				logService.error('checkAndSend error: ' + JSON.stringify(error));
 			});
 	},
 
@@ -27,7 +25,6 @@ var cronJobs = {
 	 */
 	getContacts: function (startDate, endDate) {
 		startDate = startDate || new Date(); // Today
-
 		if (!endDate) {
 			endDate = new Date();
 			var days = 7; // Next week
@@ -48,7 +45,6 @@ var cronJobs = {
 			_userids: [],
 			contacts: {}
 		};
-		logService.info('contacts length: ' + contacts.length);
 
 		return new Promise(function (resolve) {
 			contacts.map(function (contact) {
@@ -100,9 +96,11 @@ var cronJobs = {
 	 * result.contacts = Object with (key, value). Key is _userid and value is a contacts list
 	 */
 	sendNotifications: function (result) {
+		var promises = [];
 		if (!result || !result.users || !result.contacts) {
 			var errorMessage = 'sendNotifications: Missing data';
-			logService.error(errorMessage);
+			logService.error(errorMessage)
+			reject(errorMessage);
 			throw new Error(errorMessage);
 		}
 
@@ -121,24 +119,24 @@ var cronJobs = {
 					template: 'notification'
 				};
 
-				mail.generateTemplate(options).then(function (data) {
+				promises.push(mail.generateTemplate(options).then(function (data) {
 					var message = {
 						text: data.text,
 						html: data.html
 					};
 
+					logService.info('Send email to: ' + headers.to);
 					return mail.sendOne(headers, message);
-				}).catch(function (error) {
-					logService.error('sendNotifications error: ', JSON.stringify(error));
-				});
+				}));
+
 			}
+		});
+
+		return Promise.all(promises).catch(function (error) {
+			logService.error('sendNotifications error: ', JSON.stringify(error));
 		});
 	}
 };
-
-if (!process.env.SPEC) {
-	cronJobs.checkAndSend();
-}
 
 module.exports = {
 	checkAndSend: cronJobs.checkAndSend,

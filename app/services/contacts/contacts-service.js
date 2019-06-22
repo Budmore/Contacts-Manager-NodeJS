@@ -84,9 +84,9 @@ var service = {
 			}
 		};
 
+
 		return new Promise(function (resolve, reject) {
 			ContactModel.find(_search, function (err, contacts) {
-
 				if (err) {
 					reject(err);
 				}
@@ -117,12 +117,13 @@ var service = {
 		const promises = [];
 		let loopDate = startDate;
 		while (loopDate <= endDate) {
+
 			let singleDayPromise = service.findContactsByDateForAllUsers(loopDate);
 			promises.push(singleDayPromise);
 			loopDate = dateFns.addDays(loopDate, 1);
 		}
 
-		return Promise.all(promises).then(contacts => _.flatten(contacts))
+		return Promise.all(promises).then(contacts => _.flatten(contacts));
 	},
 
 
