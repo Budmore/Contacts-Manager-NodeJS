@@ -1,19 +1,411 @@
 {
 	"info": {
-		"_postman_id": "464281d0-8d0c-02e8-2460-73c94f9670fa",
+		"_postman_id": "f99b01ec-3209-4df0-8df5-8edd1db1c520",
 		"name": "Reminder",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
+			"name": "Contacts",
+			"item": [
+				{
+					"name": "Contacts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/v1/contacts",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contacts by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/v1/contacts/59e3ce3064a5dd592a6396d5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"contacts",
+								"59e3ce3064a5dd592a6396d5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Contact by id",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_id\": \"59e3ce3064a5dd592a6396d5\",\n    \"_userid\": \"59e3cd4364a5dd592a6396d4\",\n    \"firstname\": \"Foo\",\n    \"lastname\": \"boo 2\",\n    \"email\": \"testing@o2.pl\",\n    \"__v\": 0,\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/v1/contacts/59e3ce3064a5dd592a6396d5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"contacts",
+								"59e3ce3064a5dd592a6396d5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/v1/contacts",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Contact",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/v1/contacts/59e3cfd864a5dd592a6396da",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"contacts",
+								"59e3cfd864a5dd592a6396da"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/v1/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/v1/users",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/v1/users/59e3ce3064a5dd592a6396d5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"59e3ce3064a5dd592a6396d5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update users by id",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_id\": \"59e3ce3064a5dd592a6396d5\",\n    \"_userid\": \"59e3cd4364a5dd592a6396d4\",\n    \"firstname\": \"Foo\",\n    \"lastname\": \"boo 2\",\n    \"email\": \"testing@o2.pl\",\n    \"__v\": 0,\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/v1/users/59e3ce3064a5dd592a6396d5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"59e3ce3064a5dd592a6396d5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete users",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/v1/users/59e3cfd864a5dd592a6396da",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"59e3cfd864a5dd592a6396da"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"jakub@budmore.pl\",\n\t\"password\": \"jakub@budmore.pl\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/v1/auth/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"jakub@budmore.pl\",\n\t\"password\": \"jakub#321\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/v1/auth/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Me",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{JSON_WEB_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/v1/auth/me",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Health check",
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://api.reminder.budmore.pl/v1",
 					"protocol": "http",
@@ -25,219 +417,6 @@
 					],
 					"path": [
 						"v1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "User",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "x-access-token",
-						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "http://api.reminder.budmore.pl/v1/user",
-					"protocol": "http",
-					"host": [
-						"api",
-						"reminder",
-						"budmore",
-						"pl"
-					],
-					"path": [
-						"v1",
-						"user"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Contacts",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "x-access-token",
-						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "http://api.reminder.budmore.pl/v1/contacts",
-					"protocol": "http",
-					"host": [
-						"api",
-						"reminder",
-						"budmore",
-						"pl"
-					],
-					"path": [
-						"v1",
-						"contacts"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Contacts by id",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "x-access-token",
-						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "http://api.reminder.budmore.pl/v1/contacts/59e3ce3064a5dd592a6396d5",
-					"protocol": "http",
-					"host": [
-						"api",
-						"reminder",
-						"budmore",
-						"pl"
-					],
-					"path": [
-						"v1",
-						"contacts",
-						"59e3ce3064a5dd592a6396d5"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Contact by id",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "x-access-token",
-						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"_id\": \"59e3ce3064a5dd592a6396d5\",\n    \"_userid\": \"59e3cd4364a5dd592a6396d4\",\n    \"firstname\": \"Foo\",\n    \"lastname\": \"boo 2\",\n    \"email\": \"testing@o2.pl\",\n    \"__v\": 0,\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
-				},
-				"url": {
-					"raw": "http://api.reminder.budmore.pl/v1/contacts/59e3ce3064a5dd592a6396d5",
-					"protocol": "http",
-					"host": [
-						"api",
-						"reminder",
-						"budmore",
-						"pl"
-					],
-					"path": [
-						"v1",
-						"contacts",
-						"59e3ce3064a5dd592a6396d5"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Contact",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "x-access-token",
-						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
-				},
-				"url": {
-					"raw": "http://api.reminder.budmore.pl/v1/contacts",
-					"protocol": "http",
-					"host": [
-						"api",
-						"reminder",
-						"budmore",
-						"pl"
-					],
-					"path": [
-						"v1",
-						"contacts"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Contact",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "x-access-token",
-						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1OWUzY2Q0MzY0YTVkZDU5MmE2Mzk2ZDQiLCJlbWFpbCI6Impha3ViQGJ1ZG1vcmUucGwiLCJpYXQiOjE1MDgxMDE2NjEsImV4cCI6MTUwODY5NjM4MX0.0nqoDS1OBMQri32wfVZdH-z-34zqzT1uRdliM86cnDc"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"firstname\": \"Romek\",\n    \"lastname\": \"Atomek\",\n    \"email\": \"tytus@o2.pl\",\n    \"modified\": \"2017-10-15T21:08:00.876Z\",\n    \"dates\": [\n        {\n            \"type\": \"BIRTHDATE\",\n            \"date\": \"1987-08-10T22:00:00.000Z\",\n            \"year\": 1987,\n            \"month\": 7,\n            \"day\": 11,\n            \"_id\": \"59e3ce3064a5dd592a6396d6\"\n        }\n    ]\n}"
-				},
-				"url": {
-					"raw": "http://api.reminder.budmore.pl/v1/contacts/59e3cfd864a5dd592a6396da",
-					"protocol": "http",
-					"host": [
-						"api",
-						"reminder",
-						"budmore",
-						"pl"
-					],
-					"path": [
-						"v1",
-						"contacts",
-						"59e3cfd864a5dd592a6396da"
 					]
 				}
 			},
