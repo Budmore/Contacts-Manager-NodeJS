@@ -11,11 +11,11 @@ var config = require('../config');
 var mongoose = require('mongoose');
 
 
-beforeEach(function(done) {
+beforeEach(function (done) {
 
 	function clearDB() {
 		for (var i in mongoose.connection.collections) {
-			mongoose.connection.collections[i].remove(function() {});
+			mongoose.connection.collections[i].remove(function () { });
 		}
 		return done();
 	}
@@ -32,7 +32,7 @@ beforeEach(function(done) {
 	}
 });
 
-afterEach(function(done) {
+afterEach(function (done) {
 	// Mongoose model overwrite error (on watch)
 	// https://github.com/jhnns/rewire/issues/27
 	var models = mongoose.connection.models;
@@ -45,10 +45,10 @@ afterEach(function(done) {
 	done();
 });
 
-after(function(done) {
+after(function (done) {
 	// Drop database and disconnet connection to mongodb
-	mongoose.connection.db.dropDatabase(function(){
-		mongoose.connection.close(function() {
+	mongoose.connection.db.dropDatabase(function () {
+		mongoose.connection.close(function () {
 			done();
 		});
 	});

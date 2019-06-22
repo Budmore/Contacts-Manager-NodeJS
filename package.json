@@ -8,8 +8,8 @@
   },
   "scripts": {
     "start": "node_modules/nodemon/bin/nodemon.js app.js",
-    "test": "SPEC=true node_modules/mocha/bin/mocha test/*",
-    "tdd": "SPEC=true node_modules/mocha/bin/mocha  -w test/*"
+    "test": "SPEC=true node_modules/mocha/bin/mocha app/* --recursive --file test/utils.db.js",
+    "tdd": "SPEC=true node_modules/mocha/bin/mocha app/* --recursive --watch --file test/utils.db.js"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 
-var ContactModel = require('../../app/models/contact');
+var ContactModel = require('./contact');
 
 describe('Models: contact', function () {
 	'use strict';

@@ -47,13 +47,34 @@ var service = {
 	},
 
 	/**
+	 * Find contacts of all by date range
+	 *
+	 * @param  {Object} startDate
+	 * @param  {Object} endDate
+	 *
+	 * @return {array} Contacts with matching dates
+	 */
+	findAllContactsByDateRange: function (_userid, startDate, endDate) {
+		const promises = [];
+		let loopDate = startDate;
+		while (loopDate <= endDate) {
+			let singleDayPromise = service.findContactsByDate(_userid, loopDate);
+			promises.push(singleDayPromise);
+			loopDate = dateFns.addDays(loopDate, 1);
+		}
+
+		return Promise.all(promises).then(contacts => _.flatten(contacts))
+	},
+
+
+	/**
 	 * Find all contacts by current day of the month, across all users
 	 *
 	 * @param  {date} date
 	 *
 	 * @return {array} Contacts with matching date
 	 */
-	findContactsByDateWithoutUser: function (date) {
+	findContactsByDateForAllUsers: function (date) {
 		var _search = {
 			dates: {
 				$elemMatch: {
@@ -85,25 +106,25 @@ var service = {
 	},
 
 	/**
-	 * Find contacts of all by date range
+	 * Find contacts of all users by date range
 	 *
 	 * @param  {Object} startDate
 	 * @param  {Object} endDate
 	 *
 	 * @return {array} Contacts with matching dates
 	 */
-	findAllContactsByDateRange: function (_userid, startDate, endDate) {
+	findAllContactsByDateRangeForAllUsers: function (startDate, endDate) {
 		const promises = [];
 		let loopDate = startDate;
 		while (loopDate <= endDate) {
-			let singleDayPromise = service.findContactsByDate(_userid, loopDate);
+			let singleDayPromise = service.findContactsByDateForAllUsers(loopDate);
 			promises.push(singleDayPromise);
 			loopDate = dateFns.addDays(loopDate, 1);
 		}
 
-
 		return Promise.all(promises).then(contacts => _.flatten(contacts))
 	},
+
 
 
 	/**
@@ -137,7 +158,8 @@ var service = {
 
 module.exports = {
 	findContactsByDate: service.findContactsByDate,
-	findContactsByDateWithoutUser: service.findContactsByDateWithoutUser,
 	findAllContactsByDateRange: service.findAllContactsByDateRange,
+	findContactsByDateForAllUsers: service.findContactsByDateForAllUsers,
+	findAllContactsByDateRangeForAllUsers: service.findAllContactsByDateRangeForAllUsers,
 	parseDates: service.parseDates
 };

@@ -1,25 +1,21 @@
 'use strict';
 
-var UserModel       = require('../../app/models/user');
-var mail            = require('../../app/services/mail/mail');
-var contactsService = require('../../app/services/contacts/contacts-service');
-var logService      = require('../../app/services/log/log-service');
+var UserModel = require('../../models/user');
+var mail = require('../mail/mail');
+var contactsService = require('../contacts/contacts-service');
+var logService = require('../log/log-service');
 
 var cronJobs = {
-	checkAndSend: function() {
+	checkAndSend: function () {
 		logService.info('checkAndSend');
 
 		return cronJobs.getContacts()
-		.then(cronJobs.sortContactsByUser)
-		.then(cronJobs.getUsers)
-		.then(cronJobs.sendNotifications)
-		.catch(function(error) {
-			logService.info('checkAndSend error: ' + JSON.stringify(error));
-		});
-	},
-
-	getUsers: function() {
-
+			.then(cronJobs.sortContactsByUser)
+			.then(cronJobs.getUsers)
+			.then(cronJobs.sendNotifications)
+			.catch(function (error) {
+				logService.info('checkAndSend error: ' + JSON.stringify(error));
+			});
 	},
 
 	/**
@@ -29,7 +25,7 @@ var cronJobs = {
 	 * @param  {Object|Date} endDate
 	 * @return {Object} return Promise with contacts in the array
 	 */
-	getContacts: function(startDate, endDate) {
+	getContacts: function (startDate, endDate) {
 		startDate = startDate || new Date(); // Today
 
 		if (!endDate) {
@@ -37,8 +33,8 @@ var cronJobs = {
 			var days = 7; // Next week
 			endDate.setTime(startDate.getTime() + (days * 24 * 60 * 60 * 1000));
 		}
-		// @TODO get userId!!!
-		return contactsService.findAllContactsByDateRange(startDate, endDate);
+
+		return contactsService.findAllContactsByDateRangeForAllUsers(startDate, endDate);
 	},
 
 	/**
@@ -47,14 +43,14 @@ var cronJobs = {
 	 * @param  {Array} contacts
 	 * @return {Object} Promise On resolve send result with contacts and _userids
 	 */
-	sortContactsByUser: function(contacts) {
+	sortContactsByUser: function (contacts) {
 		var result = {
 			_userids: [],
 			contacts: {}
 		};
 		logService.info('contacts length: ' + contacts.length);
-		return new Promise(function(resolve) {
-			contacts.map(function(contact) {
+		return new Promise(function (resolve) {
+			contacts.map(function (contact) {
 
 				if (!contact._userid) {
 					return;
@@ -79,15 +75,15 @@ var cronJobs = {
 	 * @param  {Object} result
 	 * @return {Object} Promise
 	 */
-	getUsers: function(result) {
-		return new Promise(function(resolve) {
+	getUsers: function (result) {
+		return new Promise(function (resolve) {
 			var query = {
 				_id: {
 					$in: result._userids
 				}
 			};
 
-			UserModel.find(query).exec(function(err, users) {
+			UserModel.find(query).exec(function (err, users) {
 				result.users = users;
 				resolve(result);
 			});
@@ -102,12 +98,12 @@ var cronJobs = {
 	 * result._idusers = _id list
 	 * result.contacts = Object with (key, value). Key is _userid and value is a contacts list
 	 */
-	sendNotifications: function(result) {
+	sendNotifications: function (result) {
 		if (!result || !result.users || !result.contacts) {
 			throw new Error('sendNotifications: Missing data');
 		}
 
-		result.users.map(function(user) {
+		result.users.map(function (user) {
 			if (user.notificationsTypes && user.notificationsTypes.email) {
 				var headers = {
 					to: user.email,
@@ -122,14 +118,14 @@ var cronJobs = {
 					template: 'notification'
 				};
 
-				mail.generateTemplate(options).then(function(data) {
+				mail.generateTemplate(options).then(function (data) {
 					var message = {
 						text: data.text,
 						html: data.html
 					};
 
 					return mail.sendOne(headers, message);
-				}).catch(function(error) {
+				}).catch(function (error) {
 					logService.error('sendNotifications error: ', JSON.stringify(error));
 				});
 			}

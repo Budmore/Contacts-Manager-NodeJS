@@ -108,8 +108,8 @@ var auth = {
 		};
 
 
+		// @TODO check if email does exist
 		var createUser = new UserModel(_user);
-
 		createUser.save(function(err, user) {
 
 			if (err) {

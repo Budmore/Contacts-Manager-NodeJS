@@ -1,7 +1,7 @@
 'use strict';
 var assert = require('chai').assert;
-var ContactModel = require('../../app/models/contact');
-var contactsService = require('../../app/services/contacts/contacts-service');
+var ContactModel = require('../../../app/models/contact');
+var contactsService = require('./contacts-service');
 
 describe('Service: contacts', function () {
 	var mockedUser = {
@@ -151,14 +151,14 @@ describe('Service: contacts', function () {
 
 	});
 
-	describe('findContactsByDateWithoutUser()', function () {
+	describe('findContactsByDateForAllUsers()', function () {
 		it('should get contacts accross multiple users', function (done) {
 			// GIVEN
 			var specificDate = new Date(1987, 3, 27);
 
 
 			// WHEN
-			contactsService.findContactsByDateWithoutUser(specificDate)
+			contactsService.findContactsByDateForAllUsers(specificDate)
 				.then(function (data) {
 					// THEN
 					assert.equal(data.length, 2);

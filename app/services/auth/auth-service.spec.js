@@ -1,18 +1,18 @@
-var config  = require('../../config');
-var app     = require('../../app');
-var jwt     = require('jsonwebtoken');
+var config = require('../../../config');
+var app = require('../../../app');
+var jwt = require('jsonwebtoken');
 var request = require('superagent');
-var assert  = require('chai').assert;
+var assert = require('chai').assert;
 
-var port      = config.port;
-var version   = config.version;
-var baseUrl   = 'http://localhost:' + port + version;
+var port = config.port;
+var version = config.version;
+var baseUrl = 'http://localhost:' + port + version;
 
-var UserModel   = require('../../app/models/user');
+var UserModel = require('../../../app/models/user');
 
 var globalToken;
 
-describe('Module Auth: auth-service', function() {
+describe('Module Auth: auth-service', function () {
 	'use strict';
 
 	var _mockedUser = {
@@ -20,20 +20,20 @@ describe('Module Auth: auth-service', function() {
 		password: '[secret]'
 	};
 
-	before(function(done) {
+	before(function (done) {
 		app.start(port, done);
 	});
 
-	after(function(done) {
+	after(function (done) {
 		app.stop(done);
 	});
 
-	beforeEach('Create some user', function(done){
+	beforeEach('Create some user', function (done) {
 
 		request
 			.post(baseUrl + '/auth/register')
 			.send(_mockedUser)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.isUndefined(res.body.password);
 				assert.isDefined(res.body.token);
 				assert.equal(res.status, 201);
@@ -45,13 +45,13 @@ describe('Module Auth: auth-service', function() {
 
 	});
 
-	it('should check is user was created', function(done) {
+	it('should check is user was created', function (done) {
 
-		var query = UserModel.where({email: _mockedUser.email});
+		var query = UserModel.where({ email: _mockedUser.email });
 
 		query
 			.findOne()
-			.exec(function(err, user) {
+			.exec(function (err, user) {
 				assert.isNull(err);
 				assert.equal(user.email, _mockedUser.email);
 
@@ -61,7 +61,7 @@ describe('Module Auth: auth-service', function() {
 	});
 
 
-	it('should check login credential - 1 error (incorrect email)', function(done) {
+	it('should check login credential - 1 error (incorrect email)', function (done) {
 		var _fakeCredential = {
 			email: 'incorrect-mail.pl',
 			password: 'some#password'
@@ -69,7 +69,7 @@ describe('Module Auth: auth-service', function() {
 		request
 			.post(baseUrl + '/auth/login')
 			.send(_fakeCredential)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.equal(res.status, 401);
 				assert.isUndefined(res.body.token);
 
@@ -77,7 +77,7 @@ describe('Module Auth: auth-service', function() {
 			});
 	});
 
-	it('should check login credential - 2 error (no password)', function(done) {
+	it('should check login credential - 2 error (no password)', function (done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			password: ''
@@ -85,7 +85,7 @@ describe('Module Auth: auth-service', function() {
 		request
 			.post(baseUrl + '/auth/login')
 			.send(_fakeCredential)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.equal(res.status, 401);
 				assert.isUndefined(res.body.token);
 
@@ -93,7 +93,7 @@ describe('Module Auth: auth-service', function() {
 			});
 	});
 
-	it('should check login credential - 3 error (incorrect pass)', function(done) {
+	it('should check login credential - 3 error (incorrect pass)', function (done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			// password: _mockedUser.password
@@ -103,7 +103,7 @@ describe('Module Auth: auth-service', function() {
 		request
 			.post(baseUrl + '/auth/login')
 			.send(_fakeCredential)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.isDefined(err);
 				assert.equal(res.status, 401);
 				assert.isUndefined(res.body.token);
@@ -112,7 +112,7 @@ describe('Module Auth: auth-service', function() {
 			});
 	});
 
-	it('should check login credential - 4 success (generateToken)', function(done) {
+	it('should check login credential - 4 success (generateToken)', function (done) {
 		var _fakeCredential = {
 			email: _mockedUser.email,
 			password: _mockedUser.password
@@ -121,7 +121,7 @@ describe('Module Auth: auth-service', function() {
 		request
 			.post(baseUrl + '/auth/login')
 			.send(_fakeCredential)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.isNull(err);
 				assert.equal(res.status, 200);
 
@@ -134,7 +134,7 @@ describe('Module Auth: auth-service', function() {
 	});
 
 
-	it('should createUser() - create new user - 1 all is OK', function(done) {
+	it('should createUser() - create new user - 1 all is OK', function (done) {
 
 		var _data = {
 			email: 'jakubo@2.pl',
@@ -144,7 +144,7 @@ describe('Module Auth: auth-service', function() {
 		request
 			.post(baseUrl + '/auth/register')
 			.send(_data)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.equal(res.status, 201);
 				assert.isUndefined(res.body.password);
 				assert.isDefined(res.body.token);
@@ -154,7 +154,7 @@ describe('Module Auth: auth-service', function() {
 
 	});
 
-	it('should createUser() - create new user - 2 incorect email', function(done) {
+	it('should createUser() - create new user - 2 incorect email', function (done) {
 
 		var _data = {
 			email: 'jakubo',
@@ -164,7 +164,7 @@ describe('Module Auth: auth-service', function() {
 		request
 			.post(baseUrl + '/auth/register')
 			.send(_data)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.equal(res.status, 400);
 				assert.isUndefined(res.body.token);
 				assert.isUndefined(res.body.password);
@@ -174,7 +174,7 @@ describe('Module Auth: auth-service', function() {
 
 	});
 
-	it('should createUser() - create new user - 2 incorect password', function(done) {
+	it('should createUser() - create new user - 2 incorect password', function (done) {
 
 		var _data = {
 			email: 'jaku@bo.com',
@@ -184,7 +184,7 @@ describe('Module Auth: auth-service', function() {
 		request
 			.post(baseUrl + '/auth/register')
 			.send(_data)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.equal(res.status, 400);
 				done();
 			});
@@ -192,11 +192,11 @@ describe('Module Auth: auth-service', function() {
 	});
 
 
-	it('should get user only by token', function(done) {
+	it('should get user only by token', function (done) {
 		request
 			.get(baseUrl + '/auth/me')
 			.set('x-access-token', globalToken)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				assert.equal(res.status, 200);
 				assert.equal(res.body.email, _mockedUser.email);
 
@@ -204,7 +204,7 @@ describe('Module Auth: auth-service', function() {
 				assert.isDefined(res.body.notificationsTypes);
 
 				done();
-			}) ;
+			});
 
 	});
 

@@ -1,30 +1,30 @@
 'use strict';
 
-var config         = require('../../config');
-var middleware     = require('../../app/middlewares/token-verify');
+var config = require('../../config');
+var middleware = require('./token-verify');
 
-var jwt            = require('jsonwebtoken');
-var httpMocks      = require('node-mocks-http');
+var jwt = require('jsonwebtoken');
+var httpMocks = require('node-mocks-http');
 var chaiAsPromised = require('chai-as-promised');
-var chai           = require('chai');
-var assert         = chai.assert;
+var chai = require('chai');
+var assert = chai.assert;
 
 chai.use(chaiAsPromised);
 
 
 var req, res;
-beforeEach(function() {
+beforeEach(function () {
 	req = httpMocks.createRequest();
 	res = httpMocks.createResponse();
 });
 
-describe('Middlewares "token-verify"', function() {
+describe('Middlewares "token-verify"', function () {
 
-	it('should rejected - 2 no token', function() {
+	it('should rejected - 2 no token', function () {
 
 
 		return assert.isRejected(middleware.tokenVerify(req, res))
-			.then(function(respond) {
+			.then(function (respond) {
 				assert.equal(respond.status, 403);
 			});
 
@@ -32,12 +32,12 @@ describe('Middlewares "token-verify"', function() {
 
 	});
 
-	it('should rejected - 2 invalid token', function() {
+	it('should rejected - 2 invalid token', function () {
 		req.headers['x-access-token'] = 'blabla';
 
 
 		return assert.isRejected(middleware.tokenVerify(req, res))
-			.then(function(respond) {
+			.then(function (respond) {
 				assert.equal(respond.status, 401);
 			});
 
@@ -45,7 +45,7 @@ describe('Middlewares "token-verify"', function() {
 	});
 
 
-	it('should valid token - resolve', function() {
+	it('should valid token - resolve', function () {
 		var payload = {
 			email: 'test@tes.com'
 		};
@@ -55,7 +55,7 @@ describe('Middlewares "token-verify"', function() {
 		req.query.token = token;
 
 		return assert.isFulfilled(middleware.tokenVerify(req, res))
-			.then(function() {
+			.then(function () {
 				assert.equal(res.statusCode, 200);
 				assert.equal(req.decoded.email, payload.email);
 			});

@@ -1,16 +1,16 @@
 'use strict';
-var assert       = require('chai').assert;
-var mongoose     = require('mongoose');
-var sinon        = require('sinon');
-var rewire       = require('rewire');
+var assert = require('chai').assert;
+var mongoose = require('mongoose');
+var sinon = require('sinon');
+var rewire = require('rewire');
 
-var UserModel    = require('../../app/models/user');
-var ContactModel = require('../../app/models/contact');
-var cronJobs     = rewire('../../app/services/cron-jobs');
+var UserModel = require('../../../app/models/user');
+var ContactModel = require('../../../app/models/contact');
+// var cronJobs = rewire('./cron-jobs');
 
 
 
-describe('Service: cronJobs', function() {
+describe('Service: cronJobs', function () {
 
 	var mockedId = mongoose.Types.ObjectId();
 	var d = new Date();
@@ -37,7 +37,7 @@ describe('Service: cronJobs', function() {
 				day: 11
 			}
 		]
-	},{
+	}, {
 		_userid: mockedId,
 		firstname: 'Bobek',
 		dates: [
@@ -64,11 +64,11 @@ describe('Service: cronJobs', function() {
 		}
 	};
 
-	beforeEach('Create user (to test on it)',function(done) {
+	beforeEach('Create user (to test on it)', function (done) {
 
 		var createUser = new UserModel(userMocked);
 
-		createUser.save(function(err, user) {
+		createUser.save(function (err, user) {
 			assert.isNull(err);
 			assert.ok(user);
 			done();
@@ -78,11 +78,11 @@ describe('Service: cronJobs', function() {
 
 
 
-	beforeEach('Create contacts with _userid (to test on it)',function(done) {
+	beforeEach('Create contacts with _userid (to test on it)', function (done) {
 
 		var createContact = new ContactModel();
 
-		createContact.collection.insert(mockedContacts, function(err, contacts) {
+		createContact.collection.insert(mockedContacts, function (err, contacts) {
 			assert.isNull(err);
 			assert.ok(contacts);
 			assert.isArray(contacts);
@@ -93,7 +93,7 @@ describe('Service: cronJobs', function() {
 
 
 	//@TODO: check how to mock third party services
-	it.skip('should getContacts() ', function(done) {
+	it.skip('should getContacts() ', function (done) {
 		// var mail = cronJobs.__get__('mail');
 		// var spy1 = sinon.spy(mail, 'generateTemplate');
 
