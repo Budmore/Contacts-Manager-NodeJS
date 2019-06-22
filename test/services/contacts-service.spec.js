@@ -43,6 +43,20 @@ describe('Service: contacts', function () {
 		]
 	};
 
+	var mockedContact3 = {
+		_userid: mockedUser._id,
+		firstname: 'Jolek',
+		dates: [
+			{
+				type: 'BIRTHDATE',
+				date: new Date(1987, 3, 27),
+				year: 1987,
+				month: 3,
+				day: 27
+			}
+		]
+	};
+
 	var mockedContact4 = {
 		_userid: 'random41b9612e42e2fc440dd',
 		firstname: 'Lolek',
@@ -59,7 +73,7 @@ describe('Service: contacts', function () {
 
 	beforeEach('Create model with id (to test on it)', function (done) {
 
-		var newContacts = [mockedContact, mockedContact2, mockedContact4];
+		var newContacts = [mockedContact, mockedContact2, mockedContact3, mockedContact4];
 
 		ContactModel.create(newContacts, function (err, contacts) {
 			assert.isNull(err);
@@ -135,5 +149,23 @@ describe('Service: contacts', function () {
 				done();
 			});
 
+	});
+
+	describe('findContactsByDateWithoutUser()', function () {
+		it('should get contacts accross multiple users', function (done) {
+			// GIVEN
+			var specificDate = new Date(1987, 3, 27);
+
+
+			// WHEN
+			contactsService.findContactsByDateWithoutUser(specificDate)
+				.then(function (data) {
+					// THEN
+					assert.equal(data.length, 2);
+					assert.notEqual(data[0]._userid, data[1]._userid);
+					done();
+				});
+
+		});
 	});
 });

@@ -7,7 +7,6 @@ var ContactModel = require('../../../app/models/contact');
 var service = {
 
 	/**
-	 * !deprected - use findAllContactsByDateRange
 	 * Find contacts by date
 	 *
 	 * @param  {date} date
@@ -18,6 +17,44 @@ var service = {
 	findContactsByDate: function (_userid, date) {
 		var _search = {
 			_userid: _userid,
+			dates: {
+				$elemMatch: {
+					day: date.getDate(),
+					month: date.getMonth()
+				}
+			}
+		};
+
+		return new Promise(function (resolve, reject) {
+			ContactModel.find(_search, function (err, contacts) {
+
+				if (err) {
+					reject(err);
+				}
+
+				_.each(contacts, function (contact) {
+					var filtered = _.filter(contact.dates, {
+						day: date.getDate(),
+						month: date.getMonth()
+					});
+
+					contact.dates = filtered;
+				});
+
+				resolve(contacts);
+			});
+		});
+	},
+
+	/**
+	 * Find all contacts by current day of the month, across all users
+	 *
+	 * @param  {date} date
+	 *
+	 * @return {array} Contacts with matching date
+	 */
+	findContactsByDateWithoutUser: function (date) {
+		var _search = {
 			dates: {
 				$elemMatch: {
 					day: date.getDate(),
@@ -100,6 +137,7 @@ var service = {
 
 module.exports = {
 	findContactsByDate: service.findContactsByDate,
+	findContactsByDateWithoutUser: service.findContactsByDateWithoutUser,
 	findAllContactsByDateRange: service.findAllContactsByDateRange,
 	parseDates: service.parseDates
 };
