@@ -1,11 +1,12 @@
 'use strict';
 var assert = require('chai').assert;
+var mongoose = require('mongoose');
 var ContactModel = require('../../../app/models/contact');
 var contactsService = require('./contacts-service');
 
 describe('Service: contacts', function () {
 	var mockedUser = {
-		_id: '5582d41b9612e42e2fc440dd'
+		_id: mongoose.Types.ObjectId()
 	};
 
 	var mockedContact = {
@@ -71,9 +72,24 @@ describe('Service: contacts', function () {
 		]
 	};
 
+	var mockedContact5 = {
+		_userid: 'random41b9612e42e2fc440dd',
+		firstname: 'Lolek',
+		dates: [
+			{
+				type: 'BIRTHDATE',
+				date: new Date(1987, 4, 1),
+				year: 1987,
+				month: 4,
+				day: 1
+			}
+		]
+	};
+
+
 	beforeEach('Create model with id (to test on it)', function (done) {
 
-		var newContacts = [mockedContact, mockedContact2, mockedContact3, mockedContact4];
+		var newContacts = [mockedContact, mockedContact2, mockedContact3, mockedContact4, mockedContact5];
 
 		ContactModel.create(newContacts, function (err, contacts) {
 			assert.isNull(err);
@@ -166,6 +182,24 @@ describe('Service: contacts', function () {
 					done();
 				});
 
+		});
+	});
+
+	describe('findAllContactsByDateRangeForAllUsers', function () {
+		it('should get contacts accross muliple users and days', function (done) {
+			// GIVEN
+			var startDate = new Date(1987, 3, 27);
+			var endDate = new Date(1987, 4, 1);
+
+
+			// WHEN
+			contactsService.findAllContactsByDateRangeForAllUsers(startDate, endDate)
+				.then(function (data) {
+					// THEN
+					assert.equal(data.length, 3);
+
+					done();
+				});
 		});
 	});
 });

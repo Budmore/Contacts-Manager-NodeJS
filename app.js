@@ -13,13 +13,19 @@ var port = process.env.PORT || config.port;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+
+
+
 if (!process.env.SPEC) {
 	process.env[config.environment] = true; // Environment
 	mongoose.connect(config.db[config.environment]);
 } else {
 	mongoose.connect(config.db.spec);
 }
-console.log('config.environment', config.environment);
+
 
 // START THE SERVER
 // -----------------------------------------------------------------------------

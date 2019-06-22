@@ -6,10 +6,10 @@ var contactsService = require('../contacts/contacts-service');
 var logService = require('../log/log-service');
 
 var cronJobs = {
-	checkAndSend: function () {
+	checkAndSend: function (startDate) {
 		logService.info('checkAndSend');
 
-		return cronJobs.getContacts()
+		return cronJobs.getContacts(startDate)
 			.then(cronJobs.sortContactsByUser)
 			.then(cronJobs.getUsers)
 			.then(cronJobs.sendNotifications)
@@ -49,6 +49,7 @@ var cronJobs = {
 			contacts: {}
 		};
 		logService.info('contacts length: ' + contacts.length);
+
 		return new Promise(function (resolve) {
 			contacts.map(function (contact) {
 
@@ -95,12 +96,14 @@ var cronJobs = {
 	 *
 	 * @param {object} result:
 	 * result.users =  detailed info about users
-	 * result._idusers = _id list
+	 * result._userids = _id list
 	 * result.contacts = Object with (key, value). Key is _userid and value is a contacts list
 	 */
 	sendNotifications: function (result) {
 		if (!result || !result.users || !result.contacts) {
-			throw new Error('sendNotifications: Missing data');
+			var errorMessage = 'sendNotifications: Missing data';
+			logService.error(errorMessage);
+			throw new Error(errorMessage);
 		}
 
 		result.users.map(function (user) {
@@ -138,5 +141,9 @@ if (!process.env.SPEC) {
 }
 
 module.exports = {
-	checkAndSend: cronJobs.checkAndSend
+	checkAndSend: cronJobs.checkAndSend,
+	getContacts: cronJobs.getContacts,
+	sortContactsByUser: cronJobs.sortContactsByUser,
+	getUsers: cronJobs.getUsers,
+	sendNotifications: cronJobs.sendNotifications
 };

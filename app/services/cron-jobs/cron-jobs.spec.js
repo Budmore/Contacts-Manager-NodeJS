@@ -1,74 +1,92 @@
 'use strict';
 var assert = require('chai').assert;
 var mongoose = require('mongoose');
-var sinon = require('sinon');
-var rewire = require('rewire');
 
 var UserModel = require('../../../app/models/user');
 var ContactModel = require('../../../app/models/contact');
-// var cronJobs = rewire('./cron-jobs');
-
-
+var cronJobs = require('./cron-jobs');
 
 describe('Service: cronJobs', function () {
-
 	var mockedId = mongoose.Types.ObjectId();
-	var d = new Date();
-	var day = d.getDate();
-	var month = d.getMonth();
+	var mockedId2 = mongoose.Types.ObjectId();
 
-
-	var mockedContacts = [{
-		_userid: mockedId,
-		firstname: 'Jakub',
-		dates: [
-			{
-				type: 'BIRTDATE',
-				date: new Date(1987, month, day),
-				year: 1987,
-				month: month,
-				day: day
-			},
-			{
-				type: 'CUSTOM',
-				date: new Date(2000, 3, 11),
-				year: 2000,
-				month: 6,
-				day: 11
-			}
-		]
-	}, {
-		_userid: mockedId,
-		firstname: 'Bobek',
-		dates: [
-			{
-				type: 'BIRTDATE',
-				date: new Date(1987, month, day + 5),
-				year: 1987,
-				month: month,
-				day: day + 5
-			}
-		]
-	}];
-
-	var userMocked = {
-		_id: mockedId,
-		email: 'jk.morgan@gmail.com',
-		password: 'pritty#3strong)(password',
-		notificationsTypes: {
-			email: true
-		},
-		recipients: {
-			emails: ['test@budmore.pl', 'test1@budmore.pl']
-
+	var mockedContacts = [
+		{
+			_userid: mockedId,
+			firstname: 'Jakub',
+			dates: [
+				{
+					type: 'BIRTDATE',
+					date: new Date(1987, 9, 30),
+					year: 1987,
+					month: 9,
+					day: 30
+				},
+				{
+					type: 'CUSTOM',
+					date: new Date(2000, 3, 11),
+					year: 2000,
+					month: 3,
+					day: 11
+				}
+			]
+		}, {
+			_userid: mockedId,
+			firstname: 'Bobek',
+			dates: [
+				{
+					type: 'BIRTDATE',
+					date: new Date(1987, 10, 1),
+					year: 1987,
+					month: 10,
+					day: 1
+				}
+			]
+		}, {
+			_userid: mockedId2,
+			firstname: 'Jakub 2',
+			dates: [
+				{
+					type: 'CUSTOM',
+					date: new Date(2000, 9, 28),
+					year: 2000,
+					month: 9,
+					day: 28
+				}
+			]
 		}
-	};
+	];
 
-	beforeEach('Create user (to test on it)', function (done) {
+	var mockedUsers = [
+		{
+			_id: mockedId,
+			email: 'jk.morgan@gmail.com',
+			password: 'pritty#3strong)(password',
+			notificationsTypes: {
+				email: true
+			},
+			recipients: {
+				emails: ['test@budmore.pl', 'test1@budmore.pl']
 
-		var createUser = new UserModel(userMocked);
+			}
+		}, {
+			_id: mockedId2,
+			email: 'jakub@budmore.pl',
+			password: 'pritty#3strong)(password',
+			notificationsTypes: {
+				email: true
+			},
+			recipients: {
+				emails: ['jakub@budmore.pl']
 
-		createUser.save(function (err, user) {
+			}
+		}
+	];
+
+	beforeEach('Create users (to test on it)', function (done) {
+		var createUser = new UserModel();
+
+		createUser.collection.insertMany(mockedUsers, function (err, user) {
 			assert.isNull(err);
 			assert.ok(user);
 			done();
@@ -79,63 +97,56 @@ describe('Service: cronJobs', function () {
 
 
 	beforeEach('Create contacts with _userid (to test on it)', function (done) {
-
 		var createContact = new ContactModel();
 
-		createContact.collection.insert(mockedContacts, function (err, contacts) {
+		createContact.collection.insertMany(mockedContacts, function (err, contacts) {
 			assert.isNull(err);
 			assert.ok(contacts);
-			assert.isArray(contacts);
 			done();
 		});
 
 	});
 
+	describe('getContacts()', function () {
+		it('should get contact across all users', function (done) {
+			// GIVEN
+			var startDate = new Date(2019, 9, 27);
 
-	//@TODO: check how to mock third party services
-	it.skip('should getContacts() ', function (done) {
-		// var mail = cronJobs.__get__('mail');
-		// var spy1 = sinon.spy(mail, 'generateTemplate');
-
-
-		// console.log('this', contactsServiceMock.findAllContactsByDateRange);
-
-		// var startDate = new Date();
-		// var endDate = new Date();
-
-
-
-		// cronJobs.getContacts(startDate, endDate);
-		// cronJobs.checkAndSend();
-
-		// console.log('assert',  spy1.calledOnce);
-
-		// assert.ok(spy.withArgs(startDate, endDate).calledOnce);
-
-		// var stub = sinon.stub(cronJobs.prototype, 'on').contactsService('return object');
-
-
-		// assert.ok(stub.calledWith('contactsService'));
-		// cronJobs.prototype.on.restore();
-		// assert(spy.withArgs(1).calledOnce);
-
-
-		done();
-		// cronJobs.checkAndSend().then(function(data) {
-		// 	console.log('checkAndSend', data);
-		//  done();
-		// });
-
-
-		// service.birthdateCheck(someDay).then(function(data) {
-		// 	var dataDate = data[0].birthdate.date.toString();
-		// 	var mockedDate = mockedContact.birthdate.date.toString();
-
-		// 	assert.equal(dataDate, mockedDate);
-		// 	done();
-		// });
-
+			// WHEN
+			cronJobs.getContacts(startDate).then(function (result) {
+				// THEN
+				assert.equal(result.length, 3);
+				done();
+			});
+		});
 	});
 
+	describe('sortContactsByUser()', function () {
+		it('should ', function (done) {
+			// GIVEN
+			var contacts = Object.assign([], mockedContacts);
 
+			// WHEN
+			cronJobs.sortContactsByUser(contacts).then(function (result) {
+				// THEN
+				assert(result.contacts[mockedId].length, 2);
+				assert(result.contacts[mockedId2].length, 1);
+				done();
+			});
+		});
+	});
+
+	describe('getUsers()', function () {
+		it('should get deailt inforamtion about users', function () {
+			// GIVEN
+			var sortContactsByUserResult = {
+				_userids: [mockedId, mockedId2]
+			};
+			// WHEN
+			cronJobs.getUsers(sortContactsByUserResult).then(function (result) {
+				// THEN
+				assert(sortContactsByUserResult.users.length, 2);
+			});
+		});
+	});
 });
