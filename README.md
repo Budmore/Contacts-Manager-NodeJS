@@ -55,3 +55,7 @@ npm run tdd
 ```
 
 Running `npm test` or `npm run tdd` will run the unit tests with Mocha and Chai.
+
+
+## Continuous deployment
+https://app.codeship.com/projects/84488
