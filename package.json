@@ -28,7 +28,7 @@
     "html-to-text": "4.0.0",
     "jsonwebtoken": "8.3.0",
     "lodash": ">=4.17.11",
-    "mongoose": "5.6.0",
+    "mongoose": "5.7.5",
     "nodemailer": "4.6.5",
     "nodemailer-smtp-transport": "2.7.4",
     "nodemon": "1.18.9",
