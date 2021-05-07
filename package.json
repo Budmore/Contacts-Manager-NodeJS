@@ -27,7 +27,7 @@
     "express": ">=4.16.4",
     "html-to-text": "4.0.0",
     "jsonwebtoken": "8.3.0",
-    "lodash": ">=4.17.11",
+    "lodash": ">=4.17.21",
     "mongoose": "5.6.0",
     "nodemailer": "4.6.5",
     "nodemailer-smtp-transport": "2.7.4",
