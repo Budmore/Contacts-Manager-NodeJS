@@ -33,7 +33,7 @@
     "nodemailer-smtp-transport": "2.7.4",
     "nodemon": "1.18.9",
     "scrypt": "6.0.3",
-    "validator": "10.4.0"
+    "validator": "13.7.0"
   },
   "devDependencies": {
     "chai": "4.1.2",
