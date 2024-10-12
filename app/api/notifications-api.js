@@ -2,8 +2,6 @@ var cronJobs = require('../services/cron-jobs/cron-jobs');
 var mail = require('../services/mail/mail');
 
 var notificationsApi = {
-
-
 	/**
 	 * Check notifications to send across all users
 	 *
@@ -15,23 +13,27 @@ var notificationsApi = {
 	 * @return {array}
 	 */
 	checkAndSend: function (req, res) {
-		cronJobs.checkAndSend().then(function () {
-			res.sendStatus(200);
-		}).catch(function (error) {
-			console.log('error', error);
-		});
+		cronJobs
+			.checkAndSend()
+			.then(function () {
+				res.sendStatus(200);
+			})
+			.catch(function (error) {
+				console.log('error', error);
+			});
 	},
 
-
 	smtpVerifyConfig: function (req, res) {
-		mail.smtpVerifyConfig().then(function (result) {
-			res.send(result);
-		}).catch(function (error) {
-			console.log('error', error);
-		});
-	}
-}
-
+		mail
+			.smtpVerifyConfig()
+			.then(function (result) {
+				res.send(result);
+			})
+			.catch(function (error) {
+				console.log('error', error);
+			});
+	},
+};
 
 module.exports = {
 	checkAndSend: notificationsApi.checkAndSend,

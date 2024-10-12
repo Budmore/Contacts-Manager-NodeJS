@@ -1,14 +1,23 @@
-var assert = require('chai').assert;
-
-var ContactModel = require('./contact');
+const mongoose = require('mongoose');
+const ContactModel = require('./contact');
 
 describe('Models: contact', function () {
-	'use strict';
+	beforeAll(async () => {
+		await mongoose.connect(process.env.MONGO_URI);
+	});
 
-	it('should create new contact', function (done) {
-		var someDate = new Date();
+	afterAll(async () => {
+		await mongoose.disconnect();
+	});
 
-		var _contact = {
+	beforeEach(async () => {
+		await ContactModel.deleteMany();
+	});
+
+	it('should create new contact', async () => {
+		const someDate = new Date();
+
+		const validContact = new ContactModel({
 			firstname: 'Jakub',
 			lastname: 'Mach',
 			nickname: 'Budmore',
@@ -21,24 +30,14 @@ describe('Models: contact', function () {
 					date: someDate,
 					year: someDate.getFullYear(),
 					month: someDate.getMonth(),
-					day: someDate.getDate()
-				}
-			]
-		};
-
-		var createContact = new ContactModel(_contact);
-
-		createContact.save(function (err, doc) {
-			assert.isNull(err);
-			assert.ok(doc);
-			assert.isObject(doc);
-
-			assert.equal(doc.name, _contact.name);
-			assert.equal(doc.dates[0].date, someDate);
-
-			done();
+					day: someDate.getDate(),
+				},
+			],
 		});
 
-	});
+		const savedContact = await validContact.save();
 
+		expect(savedContact.name).toBe(validContact.name);
+		expect(savedContact.dates[0].date).toBe(someDate);
+	});
 });

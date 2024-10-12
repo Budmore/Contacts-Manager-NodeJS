@@ -7,7 +7,8 @@ var logService = require('../log/log-service');
 
 var cronJobs = {
 	checkAndSend: function (startDate) {
-		return cronJobs.getContacts(startDate)
+		return cronJobs
+			.getContacts(startDate)
 			.then(cronJobs.sortContactsByUser)
 			.then(cronJobs.getUsers)
 			.then(cronJobs.sendNotifications)
@@ -28,10 +29,13 @@ var cronJobs = {
 		if (!endDate) {
 			endDate = new Date();
 			var days = 7; // Next week
-			endDate.setTime(startDate.getTime() + (days * 24 * 60 * 60 * 1000));
+			endDate.setTime(startDate.getTime() + days * 24 * 60 * 60 * 1000);
 		}
 
-		return contactsService.findAllContactsByDateRangeForAllUsers(startDate, endDate);
+		return contactsService.findAllContactsByDateRangeForAllUsers(
+			startDate,
+			endDate
+		);
 	},
 
 	/**
@@ -43,12 +47,11 @@ var cronJobs = {
 	sortContactsByUser: function (contacts) {
 		var result = {
 			_userids: [],
-			contacts: {}
+			contacts: {},
 		};
 
 		return new Promise(function (resolve) {
 			contacts.map(function (contact) {
-
 				if (!contact._userid) {
 					return;
 				}
@@ -61,7 +64,6 @@ var cronJobs = {
 				result.contacts[contact._userid].push(contact);
 			});
 
-
 			resolve(result);
 		});
 	},
@@ -73,17 +75,16 @@ var cronJobs = {
 	 * @return {Object} Promise
 	 */
 	getUsers: function (result) {
-		return new Promise(function (resolve) {
+		return new Promise(async function (resolve) {
 			var query = {
 				_id: {
-					$in: result._userids
-				}
+					$in: result._userids,
+				},
 			};
 
-			UserModel.find(query).exec(function (err, users) {
-				result.users = users;
-				resolve(result);
-			});
+			result.users = await UserModel.find(query).exec();
+
+			resolve(result);
 		});
 	},
 
@@ -99,7 +100,7 @@ var cronJobs = {
 		var promises = [];
 		if (!result || !result.users || !result.contacts) {
 			var errorMessage = 'sendNotifications: Missing data';
-			logService.error(errorMessage)
+			logService.error(errorMessage);
 			reject(errorMessage);
 			throw new Error(errorMessage);
 		}
@@ -109,33 +110,34 @@ var cronJobs = {
 				var headers = {
 					to: user.email,
 					bcc: user.recipients && user.recipients.emails,
-					subject: 'Pamiętaj o życzeniach'
+					subject: 'Pamiętaj o życzeniach',
 				};
 
 				var options = {
 					data: {
-						contacts: result.contacts[user._id]
+						contacts: result.contacts[user._id],
 					},
-					template: 'notification'
+					template: 'notification',
 				};
 
-				promises.push(mail.generateTemplate(options).then(function (data) {
-					var message = {
-						text: data.text,
-						html: data.html
-					};
+				promises.push(
+					mail.generateTemplate(options).then(function (data) {
+						var message = {
+							text: data.text,
+							html: data.html,
+						};
 
-					logService.info('Send email to: ' + headers.to);
-					return mail.sendOne(headers, message);
-				}));
-
+						logService.info('Send email to: ' + headers.to);
+						return mail.sendOne(headers, message);
+					})
+				);
 			}
 		});
 
 		return Promise.all(promises).catch(function (error) {
 			logService.error('sendNotifications error: ', JSON.stringify(error));
 		});
-	}
+	},
 };
 
 module.exports = {
@@ -143,5 +145,5 @@ module.exports = {
 	getContacts: cronJobs.getContacts,
 	sortContactsByUser: cronJobs.sortContactsByUser,
 	getUsers: cronJobs.getUsers,
-	sendNotifications: cronJobs.sendNotifications
+	sendNotifications: cronJobs.sendNotifications,
 };

@@ -1,11 +1,10 @@
 'use strict';
 
-var _ = require('lodash');
-var dateFns = require('date-fns');
-var ContactModel = require('../../../app/models/contact');
+const _ = require('lodash');
+const dateFns = require('date-fns');
+const ContactModel = require('../../../app/models/contact');
 
-var service = {
-
+const service = {
 	/**
 	 * Find contacts by date
 	 *
@@ -14,36 +13,28 @@ var service = {
 	 *
 	 * @return {array} Contacts with matching date
 	 */
-	findContactsByDate: function (_userid, date) {
-		var _search = {
+	findContactsByDate: async function (_userid, date) {
+		const _search = {
 			_userid: _userid,
 			dates: {
 				$elemMatch: {
 					day: date.getDate(),
-					month: date.getMonth()
-				}
-			}
+					month: date.getMonth(),
+				},
+			},
 		};
 
-		return new Promise(function (resolve, reject) {
-			ContactModel.find(_search, function (err, contacts) {
+		// Await the result of the query
+		let contacts = await ContactModel.find(_search).exec();
 
-				if (err) {
-					reject(err);
-				}
-
-				_.each(contacts, function (contact) {
-					var filtered = _.filter(contact.dates, {
-						day: date.getDate(),
-						month: date.getMonth()
-					});
-
-					contact.dates = filtered;
-				});
-
-				resolve(contacts);
-			});
+		// Filter each contact's dates based on the provided date
+		contacts.forEach((contact) => {
+			contact.dates = contact.dates.filter(
+				(d) => d.day === date.getDate() && d.month === date.getMonth()
+			);
 		});
+
+		return contacts;
 	},
 
 	/**
@@ -63,9 +54,8 @@ var service = {
 			loopDate = dateFns.addDays(loopDate, 1);
 		}
 
-		return Promise.all(promises).then(contacts => _.flatten(contacts))
+		return Promise.all(promises).then((contacts) => _.flatten(contacts));
 	},
-
 
 	/**
 	 * Find all contacts by current day of the month, across all users
@@ -74,35 +64,27 @@ var service = {
 	 *
 	 * @return {array} Contacts with matching date
 	 */
-	findContactsByDateForAllUsers: function (date) {
-		var _search = {
+	findContactsByDateForAllUsers: async (date) => {
+		const _search = {
 			dates: {
 				$elemMatch: {
 					day: date.getDate(),
-					month: date.getMonth()
-				}
-			}
+					month: date.getMonth(),
+				},
+			},
 		};
 
+		// Await the result of the query
+		let contacts = await ContactModel.find(_search).exec();
 
-		return new Promise(function (resolve, reject) {
-			ContactModel.find(_search, function (err, contacts) {
-				if (err) {
-					reject(err);
-				}
-
-				_.each(contacts, function (contact) {
-					var filtered = _.filter(contact.dates, {
-						day: date.getDate(),
-						month: date.getMonth()
-					});
-
-					contact.dates = filtered;
-				});
-
-				resolve(contacts);
-			});
+		// Filter each contact's dates based on the provided date
+		contacts.forEach((contact) => {
+			contact.dates = contact.dates.filter(
+				(d) => d.day === date.getDate() && d.month === date.getMonth()
+			);
 		});
+
+		return contacts;
 	},
 
 	/**
@@ -117,16 +99,13 @@ var service = {
 		const promises = [];
 		let loopDate = startDate;
 		while (loopDate <= endDate) {
-
 			let singleDayPromise = service.findContactsByDateForAllUsers(loopDate);
 			promises.push(singleDayPromise);
 			loopDate = dateFns.addDays(loopDate, 1);
 		}
 
-		return Promise.all(promises).then(contacts => _.flatten(contacts));
+		return Promise.all(promises).then((contacts) => _.flatten(contacts));
 	},
-
-
 
 	/**
 	 * Set property year, month, day from each date in dates.
@@ -138,10 +117,10 @@ var service = {
 		if (!dates || dates.constructor !== Array) {
 			return;
 		}
-		dates.forEach(function (date) {
 
+		dates.forEach(function (date) {
 			if (date && date.date) {
-				var _isoDate = new Date(date.date);
+				const _isoDate = new Date(date.date);
 				if (dateFns.isValid(_isoDate)) {
 					date.date = _isoDate;
 					date.year = _isoDate.getFullYear();
@@ -152,15 +131,14 @@ var service = {
 		});
 
 		return dates;
-	}
-
+	},
 };
-
 
 module.exports = {
 	findContactsByDate: service.findContactsByDate,
 	findAllContactsByDateRange: service.findAllContactsByDateRange,
 	findContactsByDateForAllUsers: service.findContactsByDateForAllUsers,
-	findAllContactsByDateRangeForAllUsers: service.findAllContactsByDateRangeForAllUsers,
-	parseDates: service.parseDates
+	findAllContactsByDateRangeForAllUsers:
+		service.findAllContactsByDateRangeForAllUsers,
+	parseDates: service.parseDates,
 };

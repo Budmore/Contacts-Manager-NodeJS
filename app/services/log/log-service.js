@@ -5,7 +5,7 @@ var logService = {
 	info: function (message) {
 		const date = new Date();
 		const isoString = date.toISOString();
-		const currentDay = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+		const currentDay = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 		const pathName = `${config.logsPathname}${currentDay}.info.log`;
 		const messageTemplate = `${isoString}: ${message}\n`;
 
@@ -22,7 +22,7 @@ var logService = {
 	error: function (message) {
 		const date = new Date();
 		const isoString = date.toISOString();
-		const currentDay = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+		const currentDay = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 		const pathName = `${config.logsPathname}${currentDay}.error.log`;
 		const messageTemplate = `${isoString}: ${message}\n`;
 
@@ -34,9 +34,8 @@ var logService = {
 				console.log('Saved!');
 			});
 		}
-	}
-}
-
+	},
+};
 
 module.exports = {
 	info: logService.info,

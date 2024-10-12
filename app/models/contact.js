@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ContactSchema = new Schema({
-	_userid: {type: String, require: true},
+	_userid: { type: String, require: true },
 	name: String,
 	firstname: String,
 	lastname: String,
@@ -14,16 +14,18 @@ var ContactSchema = new Schema({
 	location: String,
 	imageUrl: String,
 	url: String,
-	dates: [{
-		type: {
-			type: String
+	dates: [
+		{
+			type: {
+				type: String,
+			},
+			date: Date,
+			year: Number,
+			month: Number,
+			day: Number,
 		},
-		date: Date,
-		year: Number,
-		month: Number,
-		day: Number
-	}],
-	modified: { type: Date, default: Date.now }
+	],
+	modified: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('Contact', ContactSchema);

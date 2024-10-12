@@ -1,12 +1,11 @@
 'use strict';
-var assert = require('chai').assert;
 var mongoose = require('mongoose');
 var ContactModel = require('../../../app/models/contact');
 var contactsService = require('./contacts-service');
 
 describe('Service: contacts', function () {
 	var mockedUser = {
-		_id: mongoose.Types.ObjectId()
+		_id: new mongoose.Types.ObjectId(),
 	};
 
 	var mockedContact = {
@@ -18,16 +17,16 @@ describe('Service: contacts', function () {
 				date: new Date(1987, 7, 11),
 				year: 1987,
 				month: 7,
-				day: 11
+				day: 11,
 			},
 			{
 				type: 'CUSTOM',
 				date: new Date(2000, 3, 11),
 				year: 2000,
 				month: 3,
-				day: 11
-			}
-		]
+				day: 11,
+			},
+		],
 	};
 
 	var mockedContact2 = {
@@ -39,9 +38,9 @@ describe('Service: contacts', function () {
 				date: new Date(1987, 6, 30),
 				year: 1987,
 				month: 6,
-				day: 30
-			}
-		]
+				day: 30,
+			},
+		],
 	};
 
 	var mockedContact3 = {
@@ -53,9 +52,9 @@ describe('Service: contacts', function () {
 				date: new Date(1987, 3, 27),
 				year: 1987,
 				month: 3,
-				day: 27
-			}
-		]
+				day: 27,
+			},
+		],
 	};
 
 	var mockedContact4 = {
@@ -67,9 +66,9 @@ describe('Service: contacts', function () {
 				date: new Date(1987, 3, 27),
 				year: 1987,
 				month: 3,
-				day: 27
-			}
-		]
+				day: 27,
+			},
+		],
 	};
 
 	var mockedContact5 = {
@@ -81,125 +80,114 @@ describe('Service: contacts', function () {
 				date: new Date(1987, 4, 1),
 				year: 1987,
 				month: 4,
-				day: 1
-			}
-		]
+				day: 1,
+			},
+		],
 	};
 
-
-	beforeEach('Create model with id (to test on it)', function (done) {
-
-		var newContacts = [mockedContact, mockedContact2, mockedContact3, mockedContact4, mockedContact5];
-
-		ContactModel.create(newContacts, function (err, contacts) {
-			assert.isNull(err);
-			assert.ok(contacts);
-
-			assert.isArray(contacts);
-			done();
-		});
-
+	beforeAll(async () => {
+		await mongoose.connect(process.env.MONGO_URI);
 	});
 
-
-	it('should findContactsByDate() - check is contacts has some event today', function (done) {
-
-		var _userid = mockedContact._userid;
-		var someDay = mockedContact.dates[0].date;
-
-		contactsService.findContactsByDate(_userid, someDay).then(function (contacts) {
-			var datesLength = contacts[0].dates.length;
-			var mockedDatesLength = mockedContact.dates.length;
-
-			assert.equal(datesLength, mockedDatesLength - 1);
-			done();
-		});
-
+	afterAll(async () => {
+		await mongoose.disconnect();
 	});
 
-	it('should parseDates() - set property year, month, day from each date in dates.', function (done) {
+	beforeEach(async () => {
+		await ContactModel.deleteMany();
+	});
 
-		var someDate = new Date();
+	beforeEach(async () => {
+		const newContacts = [
+			mockedContact,
+			mockedContact2,
+			mockedContact3,
+			mockedContact4,
+			mockedContact5,
+		];
+		const contacts = await ContactModel.create(newContacts);
+		expect(contacts).toBeTruthy();
+		expect(Array.isArray(contacts)).toBe(true);
+	});
 
-		var _contact = {
+	it('should findContactsByDate() - check is contacts has some event today', async () => {
+		const _userid = mockedContact._userid;
+		const someDay = mockedContact.dates[0].date;
+
+		const contacts = await contactsService.findContactsByDate(_userid, someDay);
+
+		const datesLength = contacts[0].dates.length;
+		const mockedDatesLength = mockedContact.dates.length;
+
+		expect(datesLength).toBe(mockedDatesLength - 1);
+	});
+
+	it('should parseDates() - set property year, month, day from each date in dates.', () => {
+		const someDate = new Date();
+
+		const _contact = {
 			dates: [
 				{
 					type: 'BIRTHDATE',
-					date: someDate
+					date: someDate,
 				},
 				{
 					type: 'EVENT',
-					date: someDate
-				}
-			]
+					date: someDate,
+				},
+			],
 		};
 
-		var someYear = someDate.getFullYear();
-		var someMonth = someDate.getMonth();
-		var someDay = someDate.getDate();
-
+		const someYear = someDate.getFullYear();
+		const someMonth = someDate.getMonth();
+		const someDay = someDate.getDate();
 
 		contactsService.parseDates(_contact.dates);
 
-		assert.equal(_contact.dates[0].year, someYear);
-		assert.equal(_contact.dates[1].month, someMonth);
-		assert.equal(_contact.dates[0].day, someDay);
+		expect(_contact.dates[0].year).toBe(someYear);
+		expect(_contact.dates[1].month).toBe(someMonth);
+		expect(_contact.dates[0].day).toBe(someDay);
 
-
-		assert.equal(_contact.dates[1].year, someYear);
-		assert.equal(_contact.dates[1].month, someMonth);
-		assert.equal(_contact.dates[1].day, someDay);
-
-		done();
+		expect(_contact.dates[1].year).toBe(someYear);
+		expect(_contact.dates[1].month).toBe(someMonth);
+		expect(_contact.dates[1].day).toBe(someDay);
 	});
 
-	it('should findAllContactsByDateRange()', function (done) {
-		var startDate = new Date('2018-06-25');
-		var endDate = new Date('2018-08-11');
-		var userId = mockedUser._id;
+	it('should findAllContactsByDateRange()', async () => {
+		const startDate = new Date('2018-06-25');
+		const endDate = new Date('2018-08-11');
+		const userId = mockedUser._id;
 
-
-		contactsService.findAllContactsByDateRange(userId, startDate, endDate)
-			.then(function (data) {
-				assert.equal(data.length, 2);
-				done();
-			});
-
+		const data = await contactsService.findAllContactsByDateRange(
+			userId,
+			startDate,
+			endDate
+		);
+		expect(data.length).toBe(2);
 	});
 
-	describe('findContactsByDateForAllUsers()', function () {
-		it('should get contacts accross multiple users', function (done) {
-			// GIVEN
-			var specificDate = new Date(1987, 3, 27);
+	describe('findContactsByDateForAllUsers()', () => {
+		it('should get contacts across multiple users', async () => {
+			const specificDate = new Date(1987, 3, 27);
 
+			const data =
+				await contactsService.findContactsByDateForAllUsers(specificDate);
 
-			// WHEN
-			contactsService.findContactsByDateForAllUsers(specificDate)
-				.then(function (data) {
-					// THEN
-					assert.equal(data.length, 2);
-					assert.notEqual(data[0]._userid, data[1]._userid);
-					done();
-				});
-
+			expect(data.length).toBe(2);
+			expect(data[0]._userid).not.toBe(data[1]._userid);
 		});
 	});
 
-	describe('findAllContactsByDateRangeForAllUsers', function () {
-		it('should get contacts accross muliple users and days', function (done) {
-			// GIVEN
-			var startDate = new Date(1987, 3, 27);
-			var endDate = new Date(1987, 4, 1);
+	describe('findAllContactsByDateRangeForAllUsers', () => {
+		it('should get contacts across multiple users and days', async () => {
+			const startDate = new Date(1987, 3, 27);
+			const endDate = new Date(1987, 4, 1);
 
-
-			// WHEN
-			contactsService.findAllContactsByDateRangeForAllUsers(startDate, endDate)
-				.then(function (data) {
-					// THEN
-					assert.equal(data.length, 3);
-
-					done();
-				});
+			const data = await contactsService.findAllContactsByDateRangeForAllUsers(
+				startDate,
+				endDate
+			);
+			expect(data.length).toBe(3);
 		});
 	});
 });

@@ -1,9 +1,8 @@
 'use strict';
 // Database
-var ContactModel = require('../models/contact');
-var contactsService = require('../../app/services/contacts/contacts-service');
-var contacts = {
-
+const ContactModel = require('../models/contact');
+const contactsService = require('../../app/services/contacts/contacts-service');
+const contacts = {
 	/**
 	 * Get all contacts from db
 	 *
@@ -14,24 +13,22 @@ var contacts = {
 	 * @param  {object} res Respond data
 	 * @return {array}
 	 */
-	getAll: function (req, res) {
-
-		var query = {
-			_userid: req.decoded._id
+	getAll: async function (req, res) {
+		const query = {
+			_userid: req.decoded._id,
 		};
 
-		ContactModel.find(query, function (err, contacts) {
-			if (err) {
-				return res.status(500).send(err);
-			}
+		try {
+			const contacts = await ContactModel.find(query).exec();
 
-			var _result = {
+			const _result = {
 				count: contacts.length,
-				data: contacts
+				data: contacts,
 			};
-
 			res.json(_result);
-		});
+		} catch (err) {
+			res.status(500).send(err);
+		}
 	},
 
 	/**
@@ -43,9 +40,8 @@ var contacts = {
 	 * @param  {object} req Request data
 	 * @param  {object} res Respond data
 	 */
-	create: function (req, res) {
-
-		var _contact = {
+	create: async function (req, res) {
+		const _contact = {
 			_userid: req.decoded._id,
 			firstname: req.body.firstname,
 			lastname: req.body.lastname,
@@ -54,24 +50,21 @@ var contacts = {
 			email: req.body.email,
 			imageUrl: req.body.imageUrl,
 			url: req.body.url,
-			dates: req.body.dates
+			dates: req.body.dates,
 		};
 
 		if (_contact.dates && _contact.dates.length) {
 			contactsService.parseDates(_contact.dates);
 		}
 
-		var createContact = new ContactModel(_contact);
+		const createContact = new ContactModel(_contact);
 
-		createContact.save(function (err, doc) {
-			if (err) {
-				// @todo diffrent status for diffrent type of error.
-				return res.status(500).send(err);
-			}
-
+		try {
+			const doc = await createContact.save();
 			res.send(doc);
-
-		});
+		} catch (err) {
+			res.status(500).send(err); // @todo different status for different types of error.
+		}
 	},
 
 	/**
@@ -84,21 +77,21 @@ var contacts = {
 	 * @param  {object} res Respond data
 	 * @return {object}
 	 */
-	getById: function (req, res) {
-
-		var query = {
+	getById: async function (req, res) {
+		const query = {
 			_userid: req.decoded._id,
-			_id: req.params.id
+			_id: req.params.id,
 		};
 
-
-		ContactModel.findOne(query, function (err, doc) {
-			if (err) {
-				return res.status(404).send(err);
+		try {
+			const doc = await ContactModel.findOne(query).exec();
+			if (!doc) {
+				return res.status(404).send('Contact not found');
 			}
-
 			res.send(doc);
-		});
+		} catch (err) {
+			res.status(500).send(err);
+		}
 	},
 
 	/**
@@ -111,31 +104,33 @@ var contacts = {
 	 * @param  {object} res Respond data
 	 * @return {object}
 	 */
-	updateById: function (req, res) {
-
-		var query = {
+	updateById: async function (req, res) {
+		const query = {
 			_userid: req.decoded._id,
-			_id: req.params.id
+			_id: req.params.id,
 		};
 
-		var updatedContact = req.body;
+		const updatedContact = req.body;
 		delete updatedContact._id;
 		delete updatedContact._userid;
-
 
 		if (updatedContact.dates && updatedContact.dates.length) {
 			contactsService.parseDates(updatedContact.dates);
 		}
 
-		ContactModel.findOneAndUpdate(query, { $set: updatedContact }, { new: true },
-			function (err, doc) {
-				if (err) {
-					return res.status(404).send(err);
-				}
-
-				res.send(doc);
-
-			});
+		try {
+			const doc = await ContactModel.findOneAndUpdate(
+				query,
+				{ $set: updatedContact },
+				{ new: true }
+			).exec();
+			if (!doc) {
+				return res.status(404).send('Contact not found');
+			}
+			res.send(doc);
+		} catch (err) {
+			res.status(500).send(err);
+		}
 	},
 
 	/**
@@ -148,28 +143,28 @@ var contacts = {
 	 * @param  {object} res Respond data
 	 * @return {object}
 	 */
-	deleteById: function (req, res) {
-
-		var query = {
+	deleteById: async function (req, res) {
+		const query = {
 			_userid: req.decoded._id,
-			_id: req.params.id
+			_id: req.params.id,
 		};
 
-		ContactModel.findOneAndRemove(query, function (err) {
-			if (err) {
-				return res.status(404).send(err);
+		try {
+			const doc = await ContactModel.findOneAndRemove(query).exec();
+			if (!doc) {
+				return res.status(404).send('Contact not found');
 			}
-
 			res.status(204).send('Resource deleted successfully');
-		});
-	}
+		} catch (err) {
+			res.status(500).send(err);
+		}
+	},
 };
-
 
 module.exports = {
 	getAll: contacts.getAll,
 	create: contacts.create,
 	getById: contacts.getById,
 	updateById: contacts.updateById,
-	deleteById: contacts.deleteById
+	deleteById: contacts.deleteById,
 };

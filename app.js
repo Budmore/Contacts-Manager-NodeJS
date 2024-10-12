@@ -1,31 +1,23 @@
-'use strict';
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
+const express = require('express');
+const mongoose = require('mongoose');
+const morgan = require('morgan');
 
-var config = require('./config');
+const config = require('./config');
 
 // CONFIGURATION
 // -----------------------------------------------------------------------------
-var port = process.env.PORT || config.port;
+const app = express();
+app.use(express.json()); // Parse JSON bodies
+app.use(morgan('tiny')); // Log HTTP requests
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
-
-
-
-if (!process.env.SPEC) {
-	process.env[config.environment] = true; // Environment
-	mongoose.connect(config.db[config.environment]);
-} else {
-	mongoose.connect(config.db.spec);
-}
-
+mongoose
+	.connect(config.mongoUri)
+	.then(() => {
+		console.log('MongoDB connected');
+	})
+	.catch((error) => {
+		console.error('MongoDB connection failed:', error.message);
+	});
 
 // START THE SERVER
 // -----------------------------------------------------------------------------
@@ -40,8 +32,8 @@ var stop = (exports.stop = function (callback) {
 });
 
 if (!process.env.SPEC) {
-	start(port, function () {
-		console.log('working on port:', port);
+	start(config.port, function () {
+		console.log('working on port:', config.port);
 	});
 }
 
@@ -73,37 +65,39 @@ app.use(allowCrossDomain);
 // ROUTES
 // -----------------------------------------------------------------------------
 
-var router = express.Router();
+// var router = express.Router();
 var contactsApi = require('./app/api/contacts-api');
 var usersApi = require('./app/api/users-api');
 var authService = require('./app/services/auth/auth-service');
 var notificationsApi = require('./app/api/notifications-api');
 
-router.get('/', function (req, res) {
+app.get('/', function (req, res) {
 	res.send('isAlive');
 });
 
-// @TODO: Restrict access for unauthorized users.
-router
+app
 	// Contacts
-	.post('/contacts', tokenVerify, contactsApi.create)
-	.get('/contacts', tokenVerify, contactsApi.getAll)
-	.get('/contacts/:id', tokenVerify, contactsApi.getById)
-	.put('/contacts/:id', tokenVerify, contactsApi.updateById)
-	.delete('/contacts/:id', tokenVerify, contactsApi.deleteById)
-	// Users
-	.get('/user', tokenVerify, usersApi.getUser) // isOwner
-	.get('/users', tokenVerify, usersApi.getAll) // isSuperadmin
-	.get('/users/:id', tokenVerify, usersApi.getById) // isSuperadmin || isOwner
-	.put('/users/:id', tokenVerify, usersApi.updateById) // isSuperadmin || isOwner
-	.delete('/users/:id', tokenVerify, usersApi.deleteById) // isSuperadmin || isOwner
-	// Auth
-	.post('/auth/login', authService.login)
-	.post('/auth/register', authService.createUser)
-	.get('/auth/me', tokenVerify, authService.getUserByToken)
-	// Notifications
-	.post('/notifications/check-and-send', notificationsApi.checkAndSend)
-	.post('/notifications/smtp-verify-config', notificationsApi.smtpVerifyConfig);
+	.post('/v1/contacts', tokenVerify, contactsApi.create)
+	.get('/v1/contacts', tokenVerify, contactsApi.getAll)
+	.get('/v1/contacts/:id', tokenVerify, contactsApi.getById)
+	.put('/v1/contacts/:id', tokenVerify, contactsApi.updateById)
+	.delete('/v1/contacts/:id', tokenVerify, contactsApi.deleteById)
 
-//Add url prefix eg.'/api/v1'
-app.use(config.version, router);
+	// Auth
+	.post('/v1/auth/login', authService.login)
+	.post('/v1/auth/register', authService.createUser)
+	.get('/v1/auth/me', tokenVerify, authService.getUserByToken)
+
+	.get('/v1/user', tokenVerify, usersApi.getUser) // isOwner
+	.get('/v1/users', tokenVerify, usersApi.getAll) // isSuperadmin
+	.get('/v1/users/:id', tokenVerify, usersApi.getById) // isSuperadmin || isOwner
+	.put('/v1/users/:id', tokenVerify, usersApi.updateById) // isSuperadmin || isOwner
+	.delete('/v1/users/:id', tokenVerify, usersApi.deleteById) // isSuperadmin || isOwner
+
+	// Notifications
+	.post('/v1/notifications/check-and-send', notificationsApi.checkAndSend)
+	.post('/v1/notifications/check-and-send', notificationsApi.checkAndSend)
+	.post(
+		'/v1/notifications/smtp-verify-config',
+		notificationsApi.smtpVerifyConfig
+	);

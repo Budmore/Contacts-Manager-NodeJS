@@ -1,5 +1,5 @@
 node_modules/
-*sublime-*
-config.js
+coverage/
+.env
 .DS_Store
 /logs/*.log

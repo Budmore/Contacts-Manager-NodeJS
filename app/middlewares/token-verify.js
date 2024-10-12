@@ -1,8 +1,7 @@
 'use strict';
 
-var jwt    = require('jsonwebtoken');
+var jwt = require('jsonwebtoken');
 var config = require('../../config');
-
 
 /**
  * Check and decode Json Web Token from request
@@ -13,34 +12,32 @@ var config = require('../../config');
  * @param  {Function} next
  *
  */
-var tokenVerify = function(req) {
-	return new Promise(function(resolve, reject) {
-
-		var token = req.headers['x-access-token'] || req.body.token || req.query.token;
+var tokenVerify = function (req) {
+	return new Promise(function (resolve, reject) {
+		const authorization = req.headers['authorization'];
+		const [_, token] = authorization?.split('Bearer ') ?? '';
 
 		if (token) {
-			jwt.verify(token, config.secret, function(err, decoded) {
+			jwt.verify(token, config.jwtSecret, function (err, decoded) {
 				if (err) {
 					reject({
 						status: 401,
-						message: err
+						message: err,
 					});
 				} else {
 					req.decoded = decoded;
 					resolve();
 				}
 			});
-
-
 		} else {
 			reject({
 				status: 403,
-				message: 'No token provided.'
+				message: 'No token provided.',
 			});
 		}
 	});
 };
 
 module.exports = {
-	tokenVerify: tokenVerify
+	tokenVerify: tokenVerify,
 };

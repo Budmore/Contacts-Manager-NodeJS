@@ -1,211 +1,267 @@
-var config = require('../../../config');
-var app = require('../../../app');
-var jwt = require('jsonwebtoken');
-var request = require('superagent');
-var assert = require('chai').assert;
+const validator = require('validator');
+const authService = require('./auth-service');
+const UserModel = require('../../models/user');
+const { checkPassword, hashPassword } = require('../../utils/auth/auth.utils');
+const { generateToken } = require('../../utils/token/token.utils');
 
-var port = config.port;
-var version = config.version;
-var baseUrl = 'http://localhost:' + port + version;
+jest.mock('validator', () => ({
+	isEmail: jest.fn(),
+	isStrongPassword: jest.fn(),
+}));
+jest.mock('../../models/user');
+jest.mock('../../utils/auth/auth.utils');
+jest.mock('../../utils/token/token.utils');
 
-var UserModel = require('../../../app/models/user');
+describe('Login Service', () => {
+	let req;
+	let res;
 
-var globalToken;
-
-describe('Module Auth: auth-service', function () {
-	'use strict';
-
-	var _mockedUser = {
-		email: 'mocked@email.com',
-		password: '[secret]'
-	};
-
-	before(function (done) {
-		app.start(port, done);
-	});
-
-	after(function (done) {
-		app.stop(done);
-	});
-
-	beforeEach('Create some user', function (done) {
-
-		request
-			.post(baseUrl + '/auth/register')
-			.send(_mockedUser)
-			.end(function (err, res) {
-				assert.isUndefined(res.body.password);
-				assert.isDefined(res.body.token);
-				assert.equal(res.status, 201);
-
-				globalToken = res.body.token;
-
-				done();
-			});
-
-	});
-
-	it('should check is user was created', function (done) {
-
-		var query = UserModel.where({ email: _mockedUser.email });
-
-		query
-			.findOne()
-			.exec(function (err, user) {
-				assert.isNull(err);
-				assert.equal(user.email, _mockedUser.email);
-
-				done();
-			});
-
-	});
-
-
-	it('should check login credential - 1 error (incorrect email)', function (done) {
-		var _fakeCredential = {
-			email: 'incorrect-mail.pl',
-			password: 'some#password'
+	beforeEach(() => {
+		req = { body: {}, decoded: {} };
+		res = {
+			status: jest.fn().mockReturnThis(),
+			send: jest.fn(),
 		};
-		request
-			.post(baseUrl + '/auth/login')
-			.send(_fakeCredential)
-			.end(function (err, res) {
-				assert.equal(res.status, 401);
-				assert.isUndefined(res.body.token);
-
-				done();
-			});
+		jest.clearAllMocks();
 	});
 
-	it('should check login credential - 2 error (no password)', function (done) {
-		var _fakeCredential = {
-			email: _mockedUser.email,
-			password: ''
-		};
-		request
-			.post(baseUrl + '/auth/login')
-			.send(_fakeCredential)
-			.end(function (err, res) {
-				assert.equal(res.status, 401);
-				assert.isUndefined(res.body.token);
+	describe('login()', () => {
+		it('should return 400 if email or password is missing', async () => {
+			req.body = { email: '', password: '' };
 
-				done();
+			await authService.login(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.send).toHaveBeenCalledWith({
+				status: 400,
+				message: 'Bad request',
 			});
-	});
+		});
 
-	it('should check login credential - 3 error (incorrect pass)', function (done) {
-		var _fakeCredential = {
-			email: _mockedUser.email,
-			// password: _mockedUser.password
-			password: 'kucyk1'
-		};
+		it('should return 400 if email is not valid', async () => {
+			req.body = { email: 'invalid-email', password: 'password123' };
 
-		request
-			.post(baseUrl + '/auth/login')
-			.send(_fakeCredential)
-			.end(function (err, res) {
-				assert.isDefined(err);
-				assert.equal(res.status, 401);
-				assert.isUndefined(res.body.token);
+			await authService.login(req, res);
 
-				done();
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.send).toHaveBeenCalledWith({
+				status: 400,
+				message: 'Bad request',
 			});
-	});
+		});
 
-	it('should check login credential - 4 success (generateToken)', function (done) {
-		var _fakeCredential = {
-			email: _mockedUser.email,
-			password: _mockedUser.password
-		};
+		it('should return 401 if the user has not be found', async () => {
+			req.body = { email: 'user@example.com', password: 'password123' };
+			validator.isEmail.mockReturnValue(true);
+			const mockUser = null;
+			const execMock = jest.fn().mockResolvedValue(mockUser);
+			const selectMock = jest.fn().mockReturnValue({ exec: execMock });
+			UserModel.findOne = jest.fn().mockReturnValue({ select: selectMock });
 
-		request
-			.post(baseUrl + '/auth/login')
-			.send(_fakeCredential)
-			.end(function (err, res) {
-				assert.isNull(err);
-				assert.equal(res.status, 200);
+			await authService.login(req, res);
 
-				var validToken = jwt.verify(res.body.token, config.secret);
-
-				assert.equal(validToken.email, _mockedUser.email);
-
-				done();
+			expect(res.status).toHaveBeenCalledWith(401);
+			expect(res.send).toHaveBeenCalledWith({
+				status: 401,
+				message: 'Invalid credentials',
 			});
-	});
+		});
 
+		it('should return 401 if the user provide incorrect password', async () => {
+			validator.isEmail.mockReturnValue(true);
+			req.body = { email: 'user@example.com', password: 'password123' };
+			const mockUser = { password: 'hashedPassword' };
 
-	it('should createUser() - create new user - 1 all is OK', function (done) {
+			const execMock = jest.fn().mockResolvedValue(mockUser);
+			const selectMock = jest.fn().mockReturnValue({ exec: execMock });
+			const findOneMock = jest.fn().mockReturnValue({ select: selectMock });
+			UserModel.findOne = findOneMock;
 
-		var _data = {
-			email: 'jakubo@2.pl',
-			password: '[secret]'
-		};
+			checkPassword.mockReturnValue(false);
 
-		request
-			.post(baseUrl + '/auth/register')
-			.send(_data)
-			.end(function (err, res) {
-				assert.equal(res.status, 201);
-				assert.isUndefined(res.body.password);
-				assert.isDefined(res.body.token);
+			await authService.login(req, res);
 
-				done();
+			expect(res.status).toHaveBeenCalledWith(401);
+			expect(checkPassword).toHaveBeenCalledWith(
+				'password123',
+				'hashedPassword'
+			);
+		});
+
+		it('should return the user data with a token when user credentials are correct', async () => {
+			validator.isEmail.mockReturnValue(true);
+			req.body = { email: 'user@example.com', password: 'password123' };
+			const mockUser = {
+				_id: 'mock-id',
+				email: 'mock-email',
+				password: 'hashedPassword',
+			};
+
+			const execMock = jest.fn().mockResolvedValue(mockUser);
+			const selectMock = jest.fn().mockReturnValue({ exec: execMock });
+			const findOneMock = jest.fn().mockReturnValue({ select: selectMock });
+			UserModel.findOne = findOneMock;
+
+			generateToken.mockReturnValue('mock-token');
+			checkPassword.mockReturnValue(true);
+
+			await authService.login(req, res);
+
+			expect(res.send).toHaveBeenCalledWith({
+				_id: 'mock-id',
+				email: 'mock-email',
+				token: 'mock-token',
 			});
+		});
 
-	});
+		it('should return 500 if there is a server error', async () => {
+			validator.isEmail.mockReturnValue(true);
+			req.body = { email: 'user@example.com', password: 'password123' };
 
-	it('should createUser() - create new user - 2 incorect email', function (done) {
-
-		var _data = {
-			email: 'jakubo',
-			password: '[secret]'
-		};
-
-		request
-			.post(baseUrl + '/auth/register')
-			.send(_data)
-			.end(function (err, res) {
-				assert.equal(res.status, 400);
-				assert.isUndefined(res.body.token);
-				assert.isUndefined(res.body.password);
-
-				done();
-			});
-
-	});
-
-	it('should createUser() - create new user - 2 incorect password', function (done) {
-
-		var _data = {
-			email: 'jaku@bo.com',
-			password: ''
-		};
-
-		request
-			.post(baseUrl + '/auth/register')
-			.send(_data)
-			.end(function (err, res) {
-				assert.equal(res.status, 400);
-				done();
+			UserModel.findOne.mockReturnValue({
+				exec: jest.fn().mockRejectedValue(new Error('Database error')), // Simulating a server error
 			});
 
+			await authService.login(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(500);
+			expect(res.send).toHaveBeenCalledWith('Server error');
+		});
 	});
 
+	describe('createUser', () => {
+		it('should return 400 if email is invalid', async () => {
+			validator.isEmail.mockReturnValue(false);
 
-	it('should get user only by token', function (done) {
-		request
-			.get(baseUrl + '/auth/me')
-			.set('x-access-token', globalToken)
-			.end(function (err, res) {
-				assert.equal(res.status, 200);
-				assert.equal(res.body.email, _mockedUser.email);
+			await authService.createUser(req, res);
 
-				assert.isDefined(res.body.recipients);
-				assert.isDefined(res.body.notificationsTypes);
+			expect(validator.isEmail).toHaveBeenCalledWith(req.body.email);
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.send).toHaveBeenCalledWith(
+				'Please enter a valid email address.'
+			);
+		});
 
-				done();
+		it('should return 400 when email is valid but isStrongPassword() returns false', async () => {
+			validator.isEmail.mockReturnValue(true);
+			validator.isStrongPassword.mockReturnValue(false);
+
+			req.body.password = 'mock';
+			await authService.createUser(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.send).toHaveBeenCalledWith(
+				'The password must be at least 6 characters'
+			);
+		});
+
+		it('should create a new user with a specific payload', async () => {
+			validator.isEmail.mockReturnValue(true);
+			validator.isStrongPassword.mockReturnValue(true);
+			hashPassword.mockReturnValue('hashedPassword');
+
+			req.body.email = 'mock-email';
+			req.body.password = 'mock-password';
+
+			await authService.createUser(req, res);
+
+			expect(hashPassword).toHaveBeenCalledWith(req.body.password);
+			expect(UserModel).toHaveBeenCalledWith({
+				email: req.body.email,
+				password: 'hashedPassword',
+				notificationsTypes: { email: true, sms: false },
+				recipients: { emails: [], phones: [] },
+			});
+		});
+
+		it('should create a new user and return 201 with user data excluding password', async () => {
+			validator.isEmail.mockReturnValue(true);
+			validator.isStrongPassword.mockReturnValue(true);
+			hashPassword.mockReturnValue('hashedPassword');
+			generateToken.mockReturnValue('mock-token');
+
+			const mockUser = {
+				email: 'test@example.com',
+				password: 'hiddenPassword',
+			};
+			const mockSave = jest.fn().mockResolvedValue(mockUser);
+			UserModel.mockImplementation(() => {
+				return { save: mockSave };
 			});
 
+			req.body.email = 'mock-email';
+			req.body.password = 'mock-password';
+
+			await authService.createUser(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(201);
+			expect(res.send).toHaveBeenCalledWith({
+				email: 'test@example.com',
+				token: 'mock-token',
+			});
+		});
+
+		it('should handle errors and return 500 if there is an error', async () => {
+			validator.isEmail.mockReturnValue(true);
+			validator.isStrongPassword.mockReturnValue(true);
+			req.body.password = 'mock-password';
+
+			const error = new Error('Test error');
+			UserModel.mockImplementation(() => ({
+				save: jest.fn().mockRejectedValue(error),
+			}));
+
+			await authService.createUser(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(500);
+			expect(res.send).toHaveBeenCalledWith('Server error');
+		});
 	});
 
+	describe('getUserByToken()', () => {
+		it('should return 401 if tokenID is missing', async () => {
+			req.decoded._id = null;
+
+			await authService.getUserByToken(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(401);
+			expect(res.send).toHaveBeenCalledWith('Unauthorized');
+		});
+
+		it('should return 404 if user is not found', async () => {
+			req.decoded._id = 'someUserId';
+			UserModel.findOne.mockReturnValue({
+				exec: jest.fn().mockResolvedValue(null), // Simulating user not found
+			});
+
+			await authService.getUserByToken(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(404);
+			expect(res.send).toHaveBeenCalledWith('User not found');
+		});
+
+		it('should return the user if user is found', async () => {
+			const mockUser = { _id: 'mock-id', name: 'Mock name' };
+			req.decoded._id = 'someUserId';
+			UserModel.findOne.mockReturnValue({
+				exec: jest.fn().mockResolvedValue(mockUser), // Simulating a found user
+			});
+
+			await authService.getUserByToken(req, res);
+
+			expect(res.send).toHaveBeenCalledWith(mockUser);
+		});
+
+		it('should return 500 if there is a server error', async () => {
+			req.decoded._id = 'someUserId';
+			UserModel.findOne.mockReturnValue({
+				exec: jest.fn().mockRejectedValue(new Error('Database error')), // Simulating a server error
+			});
+
+			await authService.getUserByToken(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(500);
+			expect(res.send).toHaveBeenCalledWith('Server error');
+		});
+	});
 });

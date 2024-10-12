@@ -1,65 +1,69 @@
-'use strict';
+const jwt = require('jsonwebtoken');
+const { tokenVerify } = require('./token-verify');
+const config = require('../../config');
 
-var config = require('../../config');
-var middleware = require('./token-verify');
+jest.mock('jsonwebtoken');
 
-var jwt = require('jsonwebtoken');
-var httpMocks = require('node-mocks-http');
-var chaiAsPromised = require('chai-as-promised');
-var chai = require('chai');
-var assert = chai.assert;
+describe('tokenVerify', () => {
+	let req;
 
-chai.use(chaiAsPromised);
-
-
-var req, res;
-beforeEach(function () {
-	req = httpMocks.createRequest();
-	res = httpMocks.createResponse();
-});
-
-describe('Middlewares "token-verify"', function () {
-
-	it('should rejected - 2 no token', function () {
-
-
-		return assert.isRejected(middleware.tokenVerify(req, res))
-			.then(function (respond) {
-				assert.equal(respond.status, 403);
-			});
-
-
-
-	});
-
-	it('should rejected - 2 invalid token', function () {
-		req.headers['x-access-token'] = 'blabla';
-
-
-		return assert.isRejected(middleware.tokenVerify(req, res))
-			.then(function (respond) {
-				assert.equal(respond.status, 401);
-			});
-
-
-	});
-
-
-	it('should valid token - resolve', function () {
-		var payload = {
-			email: 'test@tes.com'
+	beforeEach(() => {
+		req = {
+			headers: {},
 		};
+	});
 
-		// @TODO: mock 3th party services
-		var token = jwt.sign(payload, config.secret);
-		req.query.token = token;
+	it('should resolve if the token is valid', async () => {
+		req.headers['authorization'] = 'Bearer validToken';
 
-		return assert.isFulfilled(middleware.tokenVerify(req, res))
-			.then(function () {
-				assert.equal(res.statusCode, 200);
-				assert.equal(req.decoded.email, payload.email);
-			});
+		jwt.verify.mockImplementation((token, secret, callback) => {
+			callback(null, { id: 'userId123' });
+		});
 
+		await expect(tokenVerify(req)).resolves.toBeUndefined();
+		expect(req.decoded).toEqual({ id: 'userId123' });
+		expect(jwt.verify).toHaveBeenCalledWith(
+			'validToken',
+			config.jwtSecret,
+			expect.any(Function)
+		);
+	});
 
+	it('should reject if the token is invalid', async () => {
+		req.headers['authorization'] = 'Bearer invalidToken';
+
+		jwt.verify.mockImplementation((token, secret, callback) => {
+			callback(new Error('Invalid token'), null);
+		});
+
+		await expect(tokenVerify(req)).rejects.toEqual({
+			status: 401,
+			message: new Error('Invalid token'),
+		});
+		expect(jwt.verify).toHaveBeenCalledWith(
+			'invalidToken',
+			config.jwtSecret,
+			expect.any(Function)
+		);
+	});
+
+	it('should reject if no token is provided', async () => {
+		req.headers['authorization'] = undefined;
+
+		await expect(tokenVerify(req)).rejects.toEqual({
+			status: 403,
+			message: 'No token provided.',
+		});
+		expect(jwt.verify).not.toHaveBeenCalled();
+	});
+
+	it('should reject if the token is malformed', async () => {
+		req.headers['authorization'] = 'InvalidHeader';
+
+		await expect(tokenVerify(req)).rejects.toEqual({
+			status: 403,
+			message: 'No token provided.',
+		});
+		expect(jwt.verify).not.toHaveBeenCalled();
 	});
 });

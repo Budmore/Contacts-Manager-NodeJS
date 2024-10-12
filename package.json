@@ -1,48 +1,34 @@
 {
-  "name": "contacts-api",
-  "version": "0.0.2",
-  "description": "NodeJS API to create new contact, editing or delete existing.",
-  "main": "index.js",
-  "engines": {
-    "node": "10.15.0"
-  },
-  "scripts": {
-    "start": "node_modules/nodemon/bin/nodemon.js app.js",
-    "test": "SPEC=true node_modules/mocha/bin/mocha app/* --recursive --file test/utils.db.js",
-    "tdd": "SPEC=true node_modules/mocha/bin/mocha app/* --recursive --watch --file test/utils.db.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/budmore/contacts-manager-nodejs"
-  },
-  "author": "Jakub Mach <j.mach@budmore.pl>",
-  "license": "MIT",
-  "private": true,
-  "bugs": {
-    "url": "https://github.com/budmore/contacts-manager-nodejs/issues"
-  },
-  "dependencies": {
-    "body-parser": "^1.18.3",
-    "date-fns": "^1.30.1",
-    "express": ">=4.16.4",
-    "html-to-text": "4.0.0",
-    "jsonwebtoken": "8.3.0",
-    "lodash": ">=4.17.11",
-    "mongoose": "5.6.0",
-    "nodemailer": "4.6.5",
-    "nodemailer-smtp-transport": "2.7.4",
-    "nodemon": "1.18.9",
-    "scrypt": "6.0.3",
-    "validator": "10.4.0"
-  },
-  "devDependencies": {
-    "chai": "4.1.2",
-    "chai-as-promised": "7.1.1",
-    "mocha": "5.2.0",
-    "node-mocks-http": "1.5.1",
-    "nodemailer-stub-transport": "1.0.0",
-    "rewire": "4.0.1",
-    "sinon": "6.0.1",
-    "superagent": "3.8.3"
-  }
+	"name": "conatcts-manger-remake",
+	"version": "1.0.0",
+	"description": "",
+	"main": "app.js",
+	"scripts": {
+		"start": "node_modules/nodemon/bin/nodemon.js app.js",
+		"test": "SPEC=true jest app/* --maxWorkers 4",
+		"prettier:write": "npx prettier . --write"
+	},
+	"author": "Jakub Mach jakub.mach@budmore.pl",
+	"license": "ISC",
+	"dependencies": {
+		"bcrypt": "^5.1.1",
+		"date-fns": "4.1.0",
+		"dotenv": "16.4.5",
+		"express": "4.21.0",
+		"html-to-text": "^9.0.5",
+		"jsonwebtoken": "9.0.2",
+		"lodash": "4.17.21",
+		"mongoose": "8.7.0",
+		"morgan": "1.10.0",
+		"nodemailer": "^6.9.15",
+		"validator": "^13.12.0"
+	},
+	"devDependencies": {
+		"jest": "^29.7.0",
+		"mongodb-memory-server": "^10.0.1",
+		"node-mocks-http": "^1.16.1",
+		"nodemon": "^3.1.7",
+		"prettier": "3.3.3",
+		"superagent": "^10.1.0"
+	}
 }
