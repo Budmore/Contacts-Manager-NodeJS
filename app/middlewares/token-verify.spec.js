@@ -14,7 +14,7 @@ describe('tokenVerify', () => {
 	});
 
 	it('should resolve if the token is valid', async () => {
-		req.headers['authorization'] = 'Bearer validToken';
+		req.headers['x-access-token'] = 'validToken';
 
 		jwt.verify.mockImplementation((token, secret, callback) => {
 			callback(null, { id: 'userId123' });
@@ -30,7 +30,7 @@ describe('tokenVerify', () => {
 	});
 
 	it('should reject if the token is invalid', async () => {
-		req.headers['authorization'] = 'Bearer invalidToken';
+		req.headers['x-access-token'] = 'invalidToken';
 
 		jwt.verify.mockImplementation((token, secret, callback) => {
 			callback(new Error('Invalid token'), null);
@@ -48,7 +48,7 @@ describe('tokenVerify', () => {
 	});
 
 	it('should reject if no token is provided', async () => {
-		req.headers['authorization'] = undefined;
+		req.headers['x-access-token'] = undefined;
 
 		await expect(tokenVerify(req)).rejects.toEqual({
 			status: 403,
@@ -58,7 +58,7 @@ describe('tokenVerify', () => {
 	});
 
 	it('should reject if the token is malformed', async () => {
-		req.headers['authorization'] = 'InvalidHeader';
+		req.headers['x-access-token'] = 'InvalidHeader';
 
 		await expect(tokenVerify(req)).rejects.toEqual({
 			status: 403,

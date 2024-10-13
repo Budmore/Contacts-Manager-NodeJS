@@ -14,8 +14,7 @@ var config = require('../../config');
  */
 var tokenVerify = function (req) {
 	return new Promise(function (resolve, reject) {
-		const authorization = req.headers['authorization'];
-		const [_, token] = authorization?.split('Bearer ') ?? '';
+		const token = req.headers['x-access-token'];
 
 		if (token) {
 			jwt.verify(token, config.jwtSecret, function (err, decoded) {

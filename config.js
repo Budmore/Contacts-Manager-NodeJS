@@ -1,11 +1,11 @@
 require('dotenv').config();
 
 module.exports = {
-	siteUrl: 'https://budmore.pl',
+	siteUrl: process.env.SITE_URL,
 	port: process.env.PORT,
 	jwtSecret: process.env.JWT_SECRET,
 	mongoUri: process.env.MONGO_URI,
-	logsPathname: 'logs/',
+	logsPathname: process.env.LOGS_PATHNAME,
 	emails: {
 		contact: process.env.EMAILS_CONTACT,
 	},

@@ -96,7 +96,6 @@ app
 
 	// Notifications
 	.post('/v1/notifications/check-and-send', notificationsApi.checkAndSend)
-	.post('/v1/notifications/check-and-send', notificationsApi.checkAndSend)
 	.post(
 		'/v1/notifications/smtp-verify-config',
 		notificationsApi.smtpVerifyConfig
