@@ -1,19 +1,19 @@
-const mongoose = require('mongoose');
-const request = require('superagent');
-const app = require('../../app');
-const config = require('../../config');
-const jwt = require('jsonwebtoken');
+// const mongoose = require('mongoose');
+// const request = require('superagent');
+// const app = require('../../../app');
+// const config = require('../../../config');
+// const jwt = require('jsonwebtoken');
 
-const port = config.port;
-const version = config.version;
-const baseUrl = 'http://localhost:' + port + version;
-const UserModel = require('../../app/models/user');
+// const port = config.port;
+// const version = config.version;
+// const baseUrl = 'http://localhost:' + port + version;
+// const UserModel = require('./users.model');
 
-let token;
-const mockedPayload = {
-	_id: '55166e70fb1e9a18818ad8fd',
-	email: 'jakub@gmail.com',
-};
+// let token;
+// const mockedPayload = {
+// 	_id: '55166e70fb1e9a18818ad8fd',
+// 	email: 'jakub@gmail.com',
+// };
 
 describe.skip('User API', function () {
 	it('should pass', () => {

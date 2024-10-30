@@ -66,10 +66,10 @@ app.use(allowCrossDomain);
 // -----------------------------------------------------------------------------
 
 // var router = express.Router();
-var contactsApi = require('./app/api/contacts-api');
-var usersApi = require('./app/api/users-api');
-var authService = require('./app/services/auth/auth-service');
-var notificationsApi = require('./app/api/notifications-api');
+var contactsController = require('./app/api/contacts/contacts.controller');
+var usersController = require('./app/api/users/users.controller');
+var authController = require('./app/api/auth/auth.controller');
+var notificationsController = require('./app/api/notifications/notifications.controller');
 
 app.get('/', function (req, res) {
 	res.send('isAlive');
@@ -77,26 +77,29 @@ app.get('/', function (req, res) {
 
 app
 	// Contacts
-	.post('/v1/contacts', tokenVerify, contactsApi.create)
-	.get('/v1/contacts', tokenVerify, contactsApi.getAll)
-	.get('/v1/contacts/:id', tokenVerify, contactsApi.getById)
-	.put('/v1/contacts/:id', tokenVerify, contactsApi.updateById)
-	.delete('/v1/contacts/:id', tokenVerify, contactsApi.deleteById)
+	.post('/v1/contacts', tokenVerify, contactsController.create)
+	.get('/v1/contacts', tokenVerify, contactsController.getAll)
+	.get('/v1/contacts/:id', tokenVerify, contactsController.getById)
+	.put('/v1/contacts/:id', tokenVerify, contactsController.updateById)
+	.delete('/v1/contacts/:id', tokenVerify, contactsController.deleteById)
 
 	// Auth
-	.post('/v1/auth/login', authService.login)
-	.post('/v1/auth/register', authService.createUser)
-	.get('/v1/auth/me', tokenVerify, authService.getUserByToken)
+	.post('/v1/auth/login', authController.login)
+	.post('/v1/auth/register', authController.createUser)
+	.get('/v1/auth/me', tokenVerify, authController.getUserByToken)
 
-	.get('/v1/user', tokenVerify, usersApi.getUser) // isOwner
-	.get('/v1/users', tokenVerify, usersApi.getAll) // isSuperadmin
-	.get('/v1/users/:id', tokenVerify, usersApi.getById) // isSuperadmin || isOwner
-	.put('/v1/users/:id', tokenVerify, usersApi.updateById) // isSuperadmin || isOwner
-	.delete('/v1/users/:id', tokenVerify, usersApi.deleteById) // isSuperadmin || isOwner
+	.get('/v1/user', tokenVerify, usersController.getUser) // isOwner
+	.get('/v1/users', tokenVerify, usersController.getAll) // isSuperadmin
+	.get('/v1/users/:id', tokenVerify, usersController.getById) // isSuperadmin || isOwner
+	.put('/v1/users/:id', tokenVerify, usersController.updateById) // isSuperadmin || isOwner
+	.delete('/v1/users/:id', tokenVerify, usersController.deleteById) // isSuperadmin || isOwner
 
 	// Notifications
-	.post('/v1/notifications/check-and-send', notificationsApi.checkAndSend)
+	.post(
+		'/v1/notifications/check-and-send',
+		notificationsController.checkAndSend
+	)
 	.post(
 		'/v1/notifications/smtp-verify-config',
-		notificationsApi.smtpVerifyConfig
+		notificationsController.smtpVerifyConfig
 	);

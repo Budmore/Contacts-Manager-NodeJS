@@ -1,6 +1,6 @@
 'use strict';
 var validator = require('validator');
-var UserModel = require('../models/user');
+var UserModel = require('./users.model');
 
 var usersApi = {
 	/**

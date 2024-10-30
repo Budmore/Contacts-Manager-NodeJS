@@ -1,8 +1,8 @@
 'use strict';
 var mongoose = require('mongoose');
 
-var UserModel = require('../../../app/models/user');
-var ContactModel = require('../../../app/models/contact');
+var UserModel = require('../../api/users/users.model');
+var ContactModel = require('../../api/contacts/contacts.model');
 var cronJobs = require('./cron-jobs');
 
 describe('Service: cronJobs', function () {
@@ -88,6 +88,8 @@ describe('Service: cronJobs', function () {
 	});
 
 	afterAll(async () => {
+		await UserModel.deleteMany();
+		await ContactModel.deleteMany();
 		await mongoose.disconnect();
 	});
 

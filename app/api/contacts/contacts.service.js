@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const dateFns = require('date-fns');
-const ContactModel = require('../../../app/models/contact');
+const ContactModel = require('./contacts.model');
 
 const service = {
 	/**

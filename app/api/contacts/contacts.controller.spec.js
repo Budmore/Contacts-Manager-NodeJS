@@ -1,18 +1,18 @@
 var request = require('superagent');
 var jwt = require('jsonwebtoken');
 
-var app = require('../../app');
-var config = require('../../config');
-var port = config.port;
-var version = config.version;
-var baseUrl = 'http://localhost:' + port + version;
-var ContactModel = require('../../app/models/contact');
+// var app = require('../../../app');
+// var config = require('../../../config');
+// var port = config.port;
+// var version = config.version;
+// var baseUrl = 'http://localhost:' + port + version;
+// var ContactModel = require('../models/contact');
 
-var token = 'mock-token';
-var mockedPayload = {
-	email: 'test@tes.com',
-	_id: '55166e70fb1e9a18818ad8fd',
-};
+// var token = 'mock-token';
+// var mockedPayload = {
+// 	email: 'test@tes.com',
+// 	_id: '55166e70fb1e9a18818ad8fd',
+// };
 
 describe.skip('Contacts API', function () {
 	it('should pass', () => {

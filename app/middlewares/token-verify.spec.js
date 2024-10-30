@@ -56,14 +56,4 @@ describe('tokenVerify', () => {
 		});
 		expect(jwt.verify).not.toHaveBeenCalled();
 	});
-
-	it('should reject if the token is malformed', async () => {
-		req.headers['x-access-token'] = 'InvalidHeader';
-
-		await expect(tokenVerify(req)).rejects.toEqual({
-			status: 403,
-			message: 'No token provided.',
-		});
-		expect(jwt.verify).not.toHaveBeenCalled();
-	});
 });

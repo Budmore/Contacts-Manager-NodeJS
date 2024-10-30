@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ContactModel = require('./contact');
+const ContactModel = require('./contacts.model');
 
 describe('Models: contact', function () {
 	beforeAll(async () => {

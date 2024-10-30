@@ -1,10 +1,9 @@
-var validator = require('validator');
+const validator = require('validator');
 
-var UserModel = require('../../models/user');
-const { hashPassword, checkPassword } = require('../../utils/auth/auth.utils');
-const { generateToken } = require('../../utils/token/token.utils');
+const { hashPassword, checkPassword, generateToken } = require('./auth.utils');
+const UserModel = require('../users/users.model');
 
-var auth = {
+const auth = {
 	/**
 	 * Login user and generate JWT (JSON Web Token)
 	 *

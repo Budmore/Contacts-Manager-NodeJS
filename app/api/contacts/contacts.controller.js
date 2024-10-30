@@ -1,7 +1,7 @@
 'use strict';
 // Database
-const ContactModel = require('../models/contact');
-const contactsService = require('../../app/services/contacts/contacts-service');
+const ContactModel = require('./contacts.model');
+const contactsService = require('./contacts.service');
 const contacts = {
 	/**
 	 * Get all contacts from db

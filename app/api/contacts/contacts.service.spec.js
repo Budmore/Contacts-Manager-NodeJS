@@ -1,7 +1,7 @@
 'use strict';
 var mongoose = require('mongoose');
-var ContactModel = require('../../../app/models/contact');
-var contactsService = require('./contacts-service');
+var ContactModel = require('./contacts.model');
+var contactsService = require('./contacts.service');
 
 describe('Service: contacts', function () {
 	var mockedUser = {
@@ -90,11 +90,8 @@ describe('Service: contacts', function () {
 	});
 
 	afterAll(async () => {
-		await mongoose.disconnect();
-	});
-
-	beforeEach(async () => {
 		await ContactModel.deleteMany();
+		await mongoose.disconnect();
 	});
 
 	beforeEach(async () => {
@@ -105,6 +102,7 @@ describe('Service: contacts', function () {
 			mockedContact4,
 			mockedContact5,
 		];
+		await ContactModel.deleteMany();
 		const contacts = await ContactModel.create(newContacts);
 		expect(contacts).toBeTruthy();
 		expect(Array.isArray(contacts)).toBe(true);

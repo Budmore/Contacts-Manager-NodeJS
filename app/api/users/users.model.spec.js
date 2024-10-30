@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const User = require('./user');
+const User = require('./users.model');
 
 describe('Models: user', () => {
 	beforeAll(async () => {

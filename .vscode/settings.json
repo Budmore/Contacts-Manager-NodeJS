@@ -1,0 +1,8 @@
+{
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit",
+		"source.organizeImports": "always"
+	},
+	"cSpell.ignorePaths": ["**/__mocks__/*", "package.json", "jest.config.js"]
+}

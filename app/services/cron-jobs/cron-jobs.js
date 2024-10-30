@@ -1,8 +1,8 @@
 'use strict';
 
-var UserModel = require('../../models/user');
+var UserModel = require('../../api/users/users.model');
 var mail = require('../mail/mail');
-var contactsService = require('../contacts/contacts-service');
+var contactsService = require('../../api/contacts/contacts.service');
 var logService = require('../log/log-service');
 
 var cronJobs = {

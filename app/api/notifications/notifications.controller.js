@@ -1,5 +1,5 @@
-var cronJobs = require('../services/cron-jobs/cron-jobs');
-var mail = require('../services/mail/mail');
+var cronJobs = require('../../services/cron-jobs/cron-jobs');
+var mail = require('../../services/mail/mail');
 
 var notificationsApi = {
 	/**

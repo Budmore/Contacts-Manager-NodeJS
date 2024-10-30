@@ -1,16 +1,14 @@
 const validator = require('validator');
-const authService = require('./auth-service');
-const UserModel = require('../../models/user');
-const { checkPassword, hashPassword } = require('../../utils/auth/auth.utils');
-const { generateToken } = require('../../utils/token/token.utils');
+const authController = require('./auth.controller');
+const UserModel = require('../users/users.model');
+const { checkPassword, hashPassword, generateToken } = require('./auth.utils');
 
 jest.mock('validator', () => ({
 	isEmail: jest.fn(),
 	isStrongPassword: jest.fn(),
 }));
-jest.mock('../../models/user');
-jest.mock('../../utils/auth/auth.utils');
-jest.mock('../../utils/token/token.utils');
+jest.mock('../users/users.model');
+jest.mock('./auth.utils');
 
 describe('Login Service', () => {
 	let req;
@@ -29,7 +27,7 @@ describe('Login Service', () => {
 		it('should return 400 if email or password is missing', async () => {
 			req.body = { email: '', password: '' };
 
-			await authService.login(req, res);
+			await authController.login(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(400);
 			expect(res.send).toHaveBeenCalledWith({
@@ -41,7 +39,7 @@ describe('Login Service', () => {
 		it('should return 400 if email is not valid', async () => {
 			req.body = { email: 'invalid-email', password: 'password123' };
 
-			await authService.login(req, res);
+			await authController.login(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(400);
 			expect(res.send).toHaveBeenCalledWith({
@@ -58,7 +56,7 @@ describe('Login Service', () => {
 			const selectMock = jest.fn().mockReturnValue({ exec: execMock });
 			UserModel.findOne = jest.fn().mockReturnValue({ select: selectMock });
 
-			await authService.login(req, res);
+			await authController.login(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(401);
 			expect(res.send).toHaveBeenCalledWith({
@@ -79,7 +77,7 @@ describe('Login Service', () => {
 
 			checkPassword.mockReturnValue(false);
 
-			await authService.login(req, res);
+			await authController.login(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(401);
 			expect(checkPassword).toHaveBeenCalledWith(
@@ -105,7 +103,7 @@ describe('Login Service', () => {
 			generateToken.mockReturnValue('mock-token');
 			checkPassword.mockReturnValue(true);
 
-			await authService.login(req, res);
+			await authController.login(req, res);
 
 			expect(res.send).toHaveBeenCalledWith({
 				_id: 'mock-id',
@@ -122,7 +120,7 @@ describe('Login Service', () => {
 				exec: jest.fn().mockRejectedValue(new Error('Database error')), // Simulating a server error
 			});
 
-			await authService.login(req, res);
+			await authController.login(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(500);
 			expect(res.send).toHaveBeenCalledWith('Server error');
@@ -133,7 +131,7 @@ describe('Login Service', () => {
 		it('should return 400 if email is invalid', async () => {
 			validator.isEmail.mockReturnValue(false);
 
-			await authService.createUser(req, res);
+			await authController.createUser(req, res);
 
 			expect(validator.isEmail).toHaveBeenCalledWith(req.body.email);
 			expect(res.status).toHaveBeenCalledWith(400);
@@ -147,7 +145,7 @@ describe('Login Service', () => {
 			validator.isStrongPassword.mockReturnValue(false);
 
 			req.body.password = 'mock';
-			await authService.createUser(req, res);
+			await authController.createUser(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(400);
 			expect(res.send).toHaveBeenCalledWith(
@@ -163,7 +161,7 @@ describe('Login Service', () => {
 			req.body.email = 'mock-email';
 			req.body.password = 'mock-password';
 
-			await authService.createUser(req, res);
+			await authController.createUser(req, res);
 
 			expect(hashPassword).toHaveBeenCalledWith(req.body.password);
 			expect(UserModel).toHaveBeenCalledWith({
@@ -192,7 +190,7 @@ describe('Login Service', () => {
 			req.body.email = 'mock-email';
 			req.body.password = 'mock-password';
 
-			await authService.createUser(req, res);
+			await authController.createUser(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(201);
 			expect(res.send).toHaveBeenCalledWith({
@@ -211,7 +209,7 @@ describe('Login Service', () => {
 				save: jest.fn().mockRejectedValue(error),
 			}));
 
-			await authService.createUser(req, res);
+			await authController.createUser(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(500);
 			expect(res.send).toHaveBeenCalledWith('Server error');
@@ -222,7 +220,7 @@ describe('Login Service', () => {
 		it('should return 401 if tokenID is missing', async () => {
 			req.decoded._id = null;
 
-			await authService.getUserByToken(req, res);
+			await authController.getUserByToken(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(401);
 			expect(res.send).toHaveBeenCalledWith('Unauthorized');
@@ -234,7 +232,7 @@ describe('Login Service', () => {
 				exec: jest.fn().mockResolvedValue(null), // Simulating user not found
 			});
 
-			await authService.getUserByToken(req, res);
+			await authController.getUserByToken(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(404);
 			expect(res.send).toHaveBeenCalledWith('User not found');
@@ -247,7 +245,7 @@ describe('Login Service', () => {
 				exec: jest.fn().mockResolvedValue(mockUser), // Simulating a found user
 			});
 
-			await authService.getUserByToken(req, res);
+			await authController.getUserByToken(req, res);
 
 			expect(res.send).toHaveBeenCalledWith(mockUser);
 		});
@@ -258,7 +256,7 @@ describe('Login Service', () => {
 				exec: jest.fn().mockRejectedValue(new Error('Database error')), // Simulating a server error
 			});
 
-			await authService.getUserByToken(req, res);
+			await authController.getUserByToken(req, res);
 
 			expect(res.status).toHaveBeenCalledWith(500);
 			expect(res.send).toHaveBeenCalledWith('Server error');
